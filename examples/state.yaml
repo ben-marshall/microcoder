@@ -1,0 +1,11 @@
+program_state:
+
+  variable_1:
+    range: [7, 0]
+    description: >
+        What is variable_1 used for?
+
+  variable_2:
+    description: >
+        What is variable_2 used for?
+

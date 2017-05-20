@@ -55,11 +55,11 @@ class UCProgramVariableCollection (object):
         Add a new program variable to the collection
         """
         
-        assert type(port) is UCProgramVariable, "variable should be of type UCProgramVariable"
+        assert type(variable) is UCProgramVariable, "variable should be of type UCProgramVariable"
 
         if not variable.name in self.by_name:
             self.by_name[variable.name] = variable
-            self.by_index.add(variable)
+            self.by_index.append(variable)
         else:
             log.error("The variable with name '%s' has already been declared"
                 % port.name)
@@ -71,7 +71,7 @@ def parseProgramVariablesYAML(yaml_path):
     describing the variables it contains.
     """
 
-    tr = UCPortCollection()
+    tr = UCProgramVariableCollection()
     
     with open(yaml_path,"r") as fh:
         contents = yaml.load(fh)
@@ -90,9 +90,8 @@ def parseProgramVariablesYAML(yaml_path):
             if("description" in variable):
                 variable_description = variable["description"]
 
-            toadd = UCProgramVariable(name , bits_hi = variable_hi,
+            toadd = UCProgramVariable(variable_name, bits_hi = variable_hi,
                                       bits_lo = variable_lo,
-                                      direction = variable_direction,
                                       description = variable_description)
-            tr.addPort(toadd)
+            tr.addProgramVariable(toadd)
 

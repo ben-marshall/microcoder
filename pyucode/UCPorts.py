@@ -62,7 +62,7 @@ class UCPortCollection (object):
 
         if not port.name in self.by_name:
             self.by_name[port.name] = port
-            self.by_index.add(port)
+            self.by_index.append(port)
         else:
             log.error("The port with name '%s' has already been declared"% port.name)
 

@@ -8,9 +8,11 @@ from .UCPorts import UCPortInput
 from .UCPorts import UCPortOutput
 from .UCPorts import UCPort
 from .UCPorts import UCPortCollection
+from .UCPorts import parsePortsYAML
 
 from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
+from .UCState import parseProgramVariablesYAML
 
 from .UCInstructions import UCInstructionArgument
 from .UCInstructions import UCInstructionStatement

@@ -37,5 +37,13 @@ def main():
     program = ucode.UCProgram()
     program.parseSource(args.program)
 
+    resolver = ucode.UCResolver()
+    resolver.addPorts(ports)
+    resolver.addVariables(state)
+    resolver.addInstructions(instrs)
+    resolver.addProgram(program)
+
+    resolver.resolve()
+
 if(__name__ == "__main__"):
     main()

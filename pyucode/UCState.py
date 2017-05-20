@@ -95,3 +95,4 @@ def parseProgramVariablesYAML(yaml_path):
                                       description = variable_description)
             tr.addProgramVariable(toadd)
 
+    return tr

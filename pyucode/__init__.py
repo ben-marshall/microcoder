@@ -22,3 +22,5 @@ from .UCInstructions import UCInstructionCollection
 from .UCProgram import UCProgramFlowChange
 from .UCProgram import UCProgramBlock
 from .UCProgram import UCProgram
+
+from .UCResolver import UCResolver

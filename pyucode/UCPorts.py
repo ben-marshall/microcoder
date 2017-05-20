@@ -106,3 +106,4 @@ def parsePortsYAML(yaml_path):
                                       direction = port_direction,
                                       description = port_description)
             tr.addPort(toadd)
+    return tr

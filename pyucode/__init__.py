@@ -18,3 +18,7 @@ from .UCInstructions import UCInstructionArgument
 from .UCInstructions import UCInstructionStatement
 from .UCInstructions import UCInstruction
 from .UCInstructions import UCInstructionCollection
+
+from .UCProgram import UCProgramFlowChange
+from .UCProgram import UCProgramBlock
+from .UCProgram import UCProgram

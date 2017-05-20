@@ -1,0 +1,18 @@
+site_name: uCode
+
+theme: readthedocs
+
+markdown_extensions:
+- smarty
+- sane_lists
+- footnotes
+
+pages:
+- Overview: README.md
+- Programs: 
+  - Overview: programs.md
+  - Ports: programs-ports.md
+  - State: programs-variables.md
+  - Instructions: programs-instructions.md
+  - Writing Programs: programs-writing.md
+- Architecture: architecture.md

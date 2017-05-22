@@ -48,6 +48,15 @@ class UCProgramVariableCollection (object):
 
         self.by_index = []
         self.by_name  = {}
+    
+    def getVariable(self, name):
+        """
+        Return the UCProgramVariable with the supplied name or None
+        """
+        if(name in self.by_name):
+            return self.by_name[name]
+        else:
+            return None
 
 
     def addProgramVariable(self, variable):

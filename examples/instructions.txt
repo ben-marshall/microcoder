@@ -1,4 +1,20 @@
 
+// Set a variable to a constant value
+define set
+    argument variable var
+    argument constant val
+begin
+    var = val
+end
+
+// Subtract a constant value from a variable
+define sub
+    argument variable var
+    argument constant val
+begin
+    var = var - val
+end
+
 // Add a constant value b to program variable a
 define add_constant 
     argument variable a

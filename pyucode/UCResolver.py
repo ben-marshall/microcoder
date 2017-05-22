@@ -4,6 +4,9 @@ Classes and functions for resolving the various components of a program into
 proper objects.
 """
 
+import copy
+import logging as log
+
 from .UCPorts import UCPort
 from .UCPorts import UCPortCollection
 
@@ -15,8 +18,6 @@ from .UCInstructions import UCInstructionCollection
 
 from .UCProgram import UCProgramBlock
 from .UCProgram import UCProgram
-
-import logging as log
 
 class UCResolver(object):
     """
@@ -50,13 +51,62 @@ class UCResolver(object):
         for b in program.blocks:
             self.program.addProgramBlock(b)
 
+    def getVariableOrPort(self, var_or_port_name):
+        """
+        Searches the list of variables, then the list of ports for one
+        matching the supplied name.
+        Returns None if no matching object is found.
+        """
+        tr = self.variables.getVariable(var_or_port_name)
+        if(tr != None):
+            return tr
+        tr = self.ports.getPort(var_or_port_name)
+        if(tr != None):
+            return tr
+        return None
+
     
     def resolveInstructionArguments(self, instr, statement):
         """
         Given an instance of UCInstruction and the statement where it is
         used, resolve all of its arguments.
         """
-        pass
+        assert type(instr) == UCInstruction, "instr should be UCInstruction"
+        assert type(statement) == str, "statement should be of type str"
+        
+        tokens  = statement.split()
+        args    = tokens [1:]
+        memonic = tokens [0]
+
+        resolved_args = {}
+
+        assert memonic == instr.name, "memonic %s != instr.name %s" % (
+                                            memonic, instr.name)
+        
+        for argument, val in zip(instr.arguments, args):
+            
+            var = self.getVariableOrPort(val)
+
+            if(argument.constant):
+                resolved_args[argument.name] = val
+
+            elif(argument.variable):
+                
+                if(var == None):
+                    log.error("Variable '%s' referenced by instruction '%s'\
+ and used for argument '%s' has not been declared" %
+                        (val, instr.name, argument.name))
+                else:
+                    resolved_args[argument.name] = var
+
+            else:
+                log.error("Argument %s of instruction %s is neither a variable\
+                or constant type. Is it properly defined?" % 
+                    (argument.name, instr.name))
+
+        tr               = copy.deepcopy(instr)
+        tr.resolved_args = resolved_args
+        return tr
 
 
     def resolveInstructions(self):

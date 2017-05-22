@@ -52,6 +52,15 @@ class UCPortCollection (object):
         self.by_index = []
         self.by_name  = {}
 
+    def getPort(self, name):
+        """
+        Return the UCPort with the supplied name or None
+        """
+        if(name in self.by_name):
+            return self.by_name[name]
+        else:
+            return None
+
 
     def addPort(self, port):
         """

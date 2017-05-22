@@ -16,6 +16,8 @@ from .UCInstructions import UCInstructionCollection
 from .UCProgram import UCProgramBlock
 from .UCProgram import UCProgram
 
+import logging as log
+
 class UCResolver(object):
     """
     Takes all of the components of a ucore (program, ports, state and 
@@ -48,6 +50,46 @@ class UCResolver(object):
         for b in program.blocks:
             self.program.addProgramBlock(b)
 
+    
+    def resolveInstructionArguments(self, instr, statement):
+        """
+        Given an instance of UCInstruction and the statement where it is
+        used, resolve all of its arguments.
+        """
+        pass
+
+
+    def resolveInstructions(self):
+        """
+        Makes sure all instructions used in the program are also defined.
+        """
+
+        for block in self.program.blocks:
+            print("Block: %s" % block.name)
+
+            for i in range(0,len(block.statements)):
+                
+                statement_type = type(block.statements[i])
+
+                if(statement_type == str):
+                    
+                    tokens      = block.statements[i].split()
+                    
+                    mnemonic    = tokens[0]
+                    instr       = self.instrs.getInstruction(mnemonic)
+
+                    if(instr == None):
+                        log.error("Instruction '%s' in block '%s' not defined."
+                            % (mnemonic, block.name))
+                    else:
+                        resolved = self.resolveInstructionArguments(
+                                                    instr, block.statements[i])
+
+                        block.statements[i] = resolved
+
+                else:
+                    print("Unexpected statement type: %s" % statement_type)
+
 
     def resolve(self):
         """
@@ -62,4 +104,5 @@ class UCResolver(object):
         - All blocks referenced within a program must be defined.
         - Variable widths must be consistant.
         """
-        pass
+        
+        self.resolveInstructions()

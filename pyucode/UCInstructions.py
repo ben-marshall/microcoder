@@ -89,6 +89,18 @@ class UCInstructionCollection(object):
         self.by_name = {}
         self.by_index = []
 
+
+    def getInstruction(self, name):
+        """
+        Return an instruction with the supplied name or None if it does not
+        exist.
+        """
+
+        if(name in self.by_name):
+            return self.by_name[name]
+        else:
+            return None
+
     
     def addInstruction(self, instr):
         """

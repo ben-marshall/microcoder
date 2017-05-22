@@ -7,16 +7,16 @@ IO port specification is done using a YAML file with the following structure:
 ```yaml
 ports:
 
-- <port name 1>
- - range:       [X, Y]
- - direction:   <in/out>
- - description: >
+  <port name 1>
+   range:       [X, Y]
+   direction:   <in/out>
+   description: >
     What does port 1 do?
 
-- <port name 2>
- - range:       [X, Y]
- - direction:   <in/out>
- - description: >
+  <port name 2>
+   range:       [X, Y]
+   direction:   <in/out>
+   description: >
     What does port 2 do?
 ```
 

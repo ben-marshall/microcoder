@@ -6,13 +6,13 @@ Like the IO ports, program state is specified using YAML data:
 ```yaml
 program_state:
 
-- <variable_1>:
-  - range: [X, Y]
-  - description: >
+  <variable_1>:
+    range: [X, Y]
+    description: >
         What is variable_1 used for?
 
-- <variable_2>:
-  - description: >
+  <variable_2>:
+    description: >
         What is variable_1 used for?
 ```
 

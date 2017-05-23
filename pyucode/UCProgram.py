@@ -5,7 +5,12 @@ Functions and classes for parsing and representing complete programs.
 
 import re
 import sys
+import logging as log
 
+UCProgramFlowNone   = 0
+UCProgramFlowGoto   = 1
+UCProgramFlowIfEqz  = 2
+UCProgramFlowIfNez  = 3
 
 class UCProgramFlowChange(object):
 
@@ -14,6 +19,38 @@ class UCProgramFlowChange(object):
         Create a new program flow change object from source.
         """
         self.src=src
+        self.change_type    = UCProgramFlowNone
+        self.target         = None
+        self.conditional    = False
+        self.variable       = None
+        self.parse()
+
+    def parse(self):
+        """
+        Parse a program flow change from a source line.
+        """
+        tokens = self.src.split(" ")
+        
+        if(len(tokens) <= 1):
+            log.error("Control flow change without target")
+
+        if(tokens[0] == "goto"):
+            self.change_type    = UCProgramFlowGoto
+            self.target         = tokens[1]
+
+        elif(tokens[0] == "ifeqz"):
+            self.change_type    = UCProgramFlowIfEqz
+            self.variable       = tokens[1]
+            self.target         = tokens[2]
+            self.conditional    = True
+
+        elif(tokens[0] == "ifnez"):
+            self.change_type    = UCProgramFlowIfNez
+            self.variable       = tokens[1]
+            self.target         = tokens[2]
+            self.conditional    = True
+
+
 
 class UCProgramBlock(object):
     """
@@ -29,6 +66,8 @@ class UCProgramBlock(object):
         self.statements = statements
         self.flow_change = flow_change
 
+
+
 class UCProgram(object):
     """
     Represents a set of ProgramBlocks joined together.
@@ -41,6 +80,17 @@ class UCProgram(object):
 
         self.blocks = []
         self.by_name= {}
+    
+    def getBlock(self, name):
+        """
+        Return a block with the supplied name or None if it does not exist.
+        """
+
+        if(name in self.by_name):
+            return self.by_name[name]
+        else:
+            return None
+
 
     def addProgramBlock(self, block):
         """
@@ -108,6 +158,7 @@ class UCProgram(object):
                     current_name        = tokens[1]
                     current_statements  = []
                     current_sub_block   = 1
+                    current_flowchange  = None
                     pstate = BLOCK 
                 else:
                     pstate = ERROR

@@ -117,6 +117,7 @@ class UCResolver(object):
         for block in self.program.blocks:
             print("Block: %s" % block.name)
 
+            # Check each statement (instruction) in the block.
             for i in range(0,len(block.statements)):
                 
                 statement_type = type(block.statements[i])
@@ -139,6 +140,31 @@ class UCResolver(object):
 
                 else:
                     print("Unexpected statement type: %s" % statement_type)
+            
+            # Check that the jump (if any) at the end of the block goes
+            # to the right place.
+            if(block.flow_change != None):
+                if(block.flow_change.conditional):
+                    varname = block.flow_change.variable
+                    v       = self.getVariableOrPort(varname)
+
+                    if(v != None):
+                        block.flow_change.variable = v
+                    else:
+                        log.error("Cannot find conditional variable '%s' used\
+ at the end of block '%s'" % (varname, block.name))
+
+                jump_target = block.flow_change.target
+                if(type(jump_target) == str):
+
+                    if(jump_target in self.program.by_name):
+                        
+                        tgt_block = self.program.getBlock(jump_target)
+                        block.flow_change.target = tgt_block
+
+                    else:
+                        log.error("Jump target '%s' at the end of block '%s'\
+ does not exist." % (jump_target, block.name))
 
 
     def resolve(self):

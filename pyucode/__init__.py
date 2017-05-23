@@ -24,3 +24,5 @@ from .UCProgram import UCProgramBlock
 from .UCProgram import UCProgram
 
 from .UCResolver import UCResolver
+
+from .UCTemplater import UCTemplater

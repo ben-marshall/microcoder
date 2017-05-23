@@ -15,6 +15,7 @@ def parseArguments():
     parser.add_argument("ports",help="Description file for the ports")
     parser.add_argument("state",help="Description file for program state")
     parser.add_argument("instructions",help="Instructions definition file")
+    parser.add_argument("--output","-O",help="Output path", default="out.v")
     parser.add_argument("program",help="The program to compile.")
 
     args = parser.parse_args()
@@ -27,6 +28,7 @@ def main():
     args = parseArguments()
 
     print("---------- uCode Compiler ----------")
+    print("> Loading sources")
     
     ports   = ucode.parsePortsYAML(args.ports)
     state   = ucode.parseProgramVariablesYAML(args.state)
@@ -36,6 +38,8 @@ def main():
 
     program = ucode.UCProgram()
     program.parseSource(args.program)
+    
+    print("> Resolving objects")
 
     resolver = ucode.UCResolver()
     resolver.addPorts(ports)
@@ -44,6 +48,13 @@ def main():
     resolver.addProgram(program)
 
     resolver.resolve()
+    
+    print("> Rendering template to %s" % args.output)
+
+    renderer = ucode.UCTemplater(resolver)
+    renderer.renderTo(args.output)
+    
+    print("> Done")
 
 if(__name__ == "__main__"):
     main()

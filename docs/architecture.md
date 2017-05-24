@@ -34,10 +34,8 @@ Execution will always start in the `main` state and continue from there.
 
 ## Instructions
 
-- All instructions will be implemented as functions which execute *in zero
-  time*. This makes them much easier to implement and re-use with different
-  arguments. A side effect of this is to mandate that all `n_*` signals for
-  program variables are of type `reg`.
+- All instructions will be implemented as sequential statements in the
+  appropriate states of the FSM where they are used.
 
 ## Program blocks
 

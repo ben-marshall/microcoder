@@ -33,7 +33,7 @@ class UCProgramVariable(object):
         self.width      = 1 + bits_hi - bits_lo
         self.lo         = bits_lo
         self.hi         = bits_hi
-        self.description= description
+        self.description= description.rstrip("\n")
 
 
 class UCProgramVariableCollection (object):

@@ -16,8 +16,8 @@ class UCInstructionArgument(object):
         self.constant = False
         self.variable = False
         self.name     = None
-        self.bits_hi  = None
-        self.bits_lo  = None
+        self.hi       = 0 
+        self.lo       = 0 
 
         if src != None:
             self.parse(src)
@@ -39,8 +39,8 @@ class UCInstructionArgument(object):
             self.name = tokens[-1]
             bits = src.split("[")[1].split("]")[0]
             bits_split = bits.split(":")
-            self.bits_hi = int(bits_split[0])
-            self.bits_lo = int(bits_split[1])
+            self.hi = int(bits_split[0])
+            self.lo = int(bits_split[1])
 
 
 class UCInstructionStatement(object):

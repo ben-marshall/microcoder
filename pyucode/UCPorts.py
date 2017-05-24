@@ -37,6 +37,8 @@ class UCPort (object):
         self.hi         = bits_hi
         self.direction  = direction
         self.description= description
+        self.is_input   = direction == UCPortInput
+        self.is_output  = direction == UCPortOutput
 
 
 class UCPortCollection (object):

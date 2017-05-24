@@ -79,16 +79,33 @@ always @(*) begin : _select_next_state_
 
     case (_current_state_)
     {%- for block in program.blocks %}
-    {%- set state_count = loop.index %}
-        {%- for stm in block.statements %}
-        state_{{block.name}}_{{loop.index}} : begin
-    
+        // Block: {{block.name}}
+        {% set state_count = loop.index %}
+        {%- if block.statements | length == 0 -%}
+
+        state_{{block.name}} : begin
+            // {{block.flow_change.src}}
         end
-        
-        {%- endfor -%}
+
+        {% else -%}
+        {%- for stm in block.statements -%}
+        // Statement {{loop.index}} of block {{block.name}}
+        state_{{block.name}}_{{loop.index}} : begin
+
+            {%- for op in stm.statements %}
+            // {{op.src}}
+            {%- endfor %}
+            {% if loop.last and block.flow_change != None-%}
+            // {{block.flow_change.src}}
+            {%- endif %}
+        end
+
+        {% endfor -%}
+        {%- endif -%}
+
     {% endfor %}
         default : begin
-
+            _next_state_ = state_main_1;
         end
     endcase
 

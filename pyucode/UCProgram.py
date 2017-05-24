@@ -140,6 +140,7 @@ class UCProgram(object):
                 toadd = UCProgramBlock(current_name,
                                        current_statements,
                                        current_flowchange)
+                print("Add block '%s'" % current_name)
                 self.addProgramBlock(toadd)
 
 
@@ -195,6 +196,12 @@ class UCProgram(object):
             else:
                 print("Parse error on line %d" % lno + 1)
                 break
+
+        if(current_name != None):
+            l_add_current_block(current_name, 
+                                current_sub_block,
+                                current_statements,
+                                current_flowchange)
 
 
 if __name__ =="__main__":

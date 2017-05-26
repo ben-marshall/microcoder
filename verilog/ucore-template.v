@@ -45,11 +45,14 @@ reg  [{{variable.hi}}:{{variable.lo}}] n_{{variable.name}};
 // State encodings.
 {%- for block in program.blocks %}
 {%- set state_count = loop.index %}
-
+        
+    {%- if block.statements | length == 0 %}
+localparam state_{{block.name}} = {{state_count + loop.index}};
+    {%- else -%}
     {%- for stm in block.statements %}
 localparam state_{{block.name}}_{{loop.index}} = {{state_count + loop.index}};
-    
     {%- endfor -%}
+    {%- endif  -%}
 
 {% endfor %}
 

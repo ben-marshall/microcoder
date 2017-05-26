@@ -66,6 +66,19 @@ class UCProgramBlock(object):
         self.statements = statements
         self.flow_change = flow_change
         self.index = None
+    
+    def synth_statements(self):
+        """
+        Return a synthesised set of statements within the program block.
+        """
+        return "// TBD synth statements"
+
+    def synth_flowchanges(self):
+        """
+        Returns a synthesised decision tree of the program flow changes
+        at the end of the block.
+        """
+        return "// TBD synth flow changes"
 
 
 class UCProgram(object):

@@ -79,17 +79,18 @@ end
 // Process responsible for selecting the next state in a program.
 //
 always @(*) begin : _select_next_state_
+    
+    _next_state_ = state_main_1;
 
     case (_current_state_)
-    {%- for block in program.blocks %}
-        // Block: {{block.name}}
+    {% for block in program.blocks %}
+    ////// Block: {{block.name}} //////
+
         {% set state_count = loop.index %}
         {%- if block.statements | length == 0 -%}
 
         state_{{block.name}} : begin
-            {% for ch in block.flow_change -%}
-            // {{ch.src}}
-            {% endfor %}
+            {{block.synth_flowchanges()}}
         end
 
         {% else -%}
@@ -102,9 +103,9 @@ always @(*) begin : _select_next_state_
             {% endfor -%}
                 
             {% if loop.last %}
-            {%- for ch in block.flow_change -%}
-            // {{ch.src}}
-            {% endfor -%}
+            {{block.synth_flowchanges()}}
+            {%- else -%}
+            _next_state_ = state_{{block.name}}_{{loop.index + 1}};
             {%- endif %}
         end
 
@@ -113,7 +114,7 @@ always @(*) begin : _select_next_state_
 
     {% endfor %}
         default : begin
-            _next_state_ = state_main_1;
+            // Do nothing.
         end
     endcase
 

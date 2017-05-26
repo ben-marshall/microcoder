@@ -7,7 +7,7 @@ block loop
     set     data_out    var1
     sub     var1        1
     
-    ifeqz   var1    finish
+    ifeqz   var1        finish
 
     goto    loop
 

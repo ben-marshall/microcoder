@@ -170,14 +170,18 @@ class UCProgram(object):
                     continue
                 
                 if(tokens[0] == "block"):
-                    l_add_current_block(current_name, 
-                                        current_sub_block,
-                                        current_statements,
-                                        current_flowchange)
+                    if(current_name != None  and
+                       (current_flowchange != None or
+                        current_statements != [])):
+                        l_add_current_block(current_name, 
+                                            current_sub_block,
+                                            current_statements,
+                                            current_flowchange)
                     # start parsing the new block.
                     current_name        = tokens[1]
                     current_statements  = []
                     current_sub_block   = 1
+                    current_flowchange  = None
                     pstate = BLOCK 
 
                 elif(tokens[0] in ["goto","ifeqz","ifnez"]):
@@ -189,6 +193,7 @@ class UCProgram(object):
                     
                     current_statements  = []
                     current_sub_block   += 1
+                    current_flowchange  = None
                     pstate = BLOCK 
                 else:
                     current_statements.append(line)
@@ -197,7 +202,9 @@ class UCProgram(object):
                 print("Parse error on line %d" % lno + 1)
                 break
 
-        if(current_name != None):
+        if(current_name != None and
+           (current_flowchange != None or
+            current_statements != [])):
             l_add_current_block(current_name, 
                                 current_sub_block,
                                 current_statements,

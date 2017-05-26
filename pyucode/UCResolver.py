@@ -134,7 +134,7 @@ class UCResolver(object):
                             % (mnemonic, block.name))
                     else:
                         resolved = self.resolveInstructionArguments(
-                                                    instr, block.statements[i])
+                                                instr, block.statements[i])
 
                         block.statements[i] = resolved
 

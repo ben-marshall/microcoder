@@ -84,7 +84,9 @@ always @(*) begin : _select_next_state_
         {%- if block.statements | length == 0 -%}
 
         state_{{block.name}} : begin
-            // {{block.flow_change.src}}
+            {% for ch in block.flow_change -%}
+            // {{ch.src}}
+            {% endfor %}
         end
 
         {% else -%}
@@ -92,11 +94,14 @@ always @(*) begin : _select_next_state_
         // Statement {{loop.index}} of block {{block.name}}
         state_{{block.name}}_{{loop.index}} : begin
 
-            {%- for op in stm.statements %}
+            {% for op in stm.statements -%}
             // {{op.src}}
-            {%- endfor %}
-            {% if loop.last and block.flow_change != None-%}
-            // {{block.flow_change.src}}
+            {% endfor -%}
+                
+            {% if loop.last %}
+            {%- for ch in block.flow_change -%}
+            // {{ch.src}}
+            {% endfor -%}
             {%- endif %}
         end
 

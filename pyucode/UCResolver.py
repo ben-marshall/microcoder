@@ -113,6 +113,7 @@ class UCResolver(object):
         """
         Makes sure all instructions used in the program are also defined.
         """
+        prev_block = None
 
         for block in self.program.blocks:
             print("Block: %s" % block.name)
@@ -143,24 +144,24 @@ class UCResolver(object):
             
             # Check that the jump (if any) at the end of the block goes
             # to the right place.
-            if(block.flow_change != None):
-                if(block.flow_change.conditional):
-                    varname = block.flow_change.variable
+            for flow_change in block.flow_change:
+                if(flow_change.conditional):
+                    varname = flow_change.variable
                     v       = self.getVariableOrPort(varname)
 
                     if(v != None):
-                        block.flow_change.variable = v
+                        flow_change.variable = v
                     else:
                         log.error("Cannot find conditional variable '%s' used\
  at the end of block '%s'" % (varname, block.name))
 
-                jump_target = block.flow_change.target
+                jump_target = flow_change.target
                 if(type(jump_target) == str):
 
                     if(jump_target in self.program.by_name):
                         
                         tgt_block = self.program.getBlock(jump_target)
-                        block.flow_change.target = tgt_block
+                        flow_change.target = tgt_block
 
                     else:
                         log.error("Jump target '%s' at the end of block '%s'\

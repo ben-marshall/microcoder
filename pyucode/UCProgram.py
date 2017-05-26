@@ -65,7 +65,7 @@ class UCProgramBlock(object):
         self.name = name
         self.statements = statements
         self.flow_change = flow_change
-
+        self.index = None
 
 
 class UCProgram(object):
@@ -77,6 +77,7 @@ class UCProgram(object):
         """
         Create a new, empty program.
         """
+        self.block_count = 0
 
         self.blocks = []
         self.by_name= {}
@@ -90,6 +91,19 @@ class UCProgram(object):
             return self.by_name[name]
         else:
             return None
+    
+    def getNextBlock(self, name):
+        """
+        Return the next block in a program given the name of another block
+        in the program.
+        Returns None if no such block exists, or it has no next block.
+        """
+
+        if(name in self.by_name):
+            block_i = self.by_name[name].index
+            return self.blocks[block_i]
+        else:
+            return None
 
 
     def addProgramBlock(self, block):
@@ -98,8 +112,10 @@ class UCProgram(object):
         """
         assert type(block) is UCProgramBlock, "block should be of type UCProgramBlock"
         if not block.name in self.by_name:
+            block.index = self.block_count
             self.blocks.append(block)
             self.by_name[block.name]=block
+            self.block_count = self.block_count + 1
         else:
             log.error("The block with name '%s' has already been declared"% block.name)
 
@@ -126,7 +142,7 @@ class UCProgram(object):
         current_name        = None
         current_sub_block   = 1
         current_statements  = []
-        current_flowchange  = None
+        current_flowchange  = []
                     
         def l_add_current_block(current_name, 
                                 current_sub_block,
@@ -159,7 +175,7 @@ class UCProgram(object):
                     current_name        = tokens[1]
                     current_statements  = []
                     current_sub_block   = 1
-                    current_flowchange  = None
+                    current_flowchange  = []
                     pstate = BLOCK 
                 else:
                     pstate = ERROR
@@ -181,20 +197,11 @@ class UCProgram(object):
                     current_name        = tokens[1]
                     current_statements  = []
                     current_sub_block   = 1
-                    current_flowchange  = None
+                    current_flowchange  = []
                     pstate = BLOCK 
 
-                elif(tokens[0] in ["goto","ifeqz","ifnez"]):
-                    current_flowchange = UCProgramFlowChange(line)
-                    l_add_current_block(current_name, 
-                                        current_sub_block,
-                                        current_statements,
-                                        current_flowchange)
-                    
-                    current_statements  = []
-                    current_sub_block   += 1
-                    current_flowchange  = None
-                    pstate = BLOCK 
+                elif(tokens[0] in ["goto", "ifeqz", "ifnez"]):
+                    current_flowchange.append(UCProgramFlowChange(line))
                 else:
                     current_statements.append(line)
 

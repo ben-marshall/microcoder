@@ -46,3 +46,25 @@ All documentation is found in the [docs/](./docs/) folder of the project.
 One can use [mkdocs](http://www.mkdocs.org/) to view them rendered as linked 
 HTML pages.
 
+
+## Examples
+
+There are two examples bundled with the repositiory.
+
+**Counter** - This is a really boring counter which simple counts down
+from 10 and then loops. Forever.
+
+```sh
+$> make all run EXAMPLE=count
+```
+
+**Fibonacci** - This program takes an `n` value, and computes the `n`'th
+number in the Fibonacci sequence.
+
+```sh
+$> make all run EXAMPLE=fibonacci
+```
+
+The output wave files for both examples are written to `work/waves.vcd`. This
+can be viewed using a program like
+[GTKWave](http://iverilog.wikia.com/wiki/GTKWAVE).

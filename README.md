@@ -68,3 +68,9 @@ $> make all run EXAMPLE=fibonacci
 The output wave files for both examples are written to `work/waves.vcd`. This
 can be viewed using a program like
 [GTKWave](http://iverilog.wikia.com/wiki/GTKWAVE).
+
+## Todo
+
+- [ ] Make it possible to define ports and variables in the same file as
+      the rest of the program.
+- [ ] Generate documentation for programs automatically.

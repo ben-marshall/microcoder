@@ -5,6 +5,7 @@ Classes and functions for representing instructions.
 
 import re
 import sys
+import logging as log
 
 class UCInstructionArgument(object):
 
@@ -53,6 +54,12 @@ class UCInstructionStatement(object):
         if src != None:
             self.parse(src)
 
+    def get_tokens(self):
+        """
+        Return a string tokenised version of the sourcefor this statement.
+        """
+        return self.src.split(" ")
+
     def parse(self, src):
         """
         Parse the string representation of the statement 
@@ -74,7 +81,65 @@ class UCInstruction(object):
         self.name       = name
         self.arguments  = arguments
         self.statements = statements
+        self.resolved_args = {}
 
+
+    def is_argument(self, token):
+        """
+        Checks if the supplied token name is an argument to the instruction.
+        """
+        return token in self.resolved_args
+
+    def get_argument(self, arg_name):
+        """
+        Returns an argument to the instruction with the supplied name,
+        or None if the instruction has no such named argument.
+        """
+        for a in self.arguments:
+            if(a.name == arg_name):
+                return a
+        return None
+
+
+    def synth_statements(self):
+        """
+        Synthesises the set of instruction statements into something
+        we can put into the verilog statemachine. Returns a list of
+        the statements as strings.
+        """
+        tr = []
+        for statement in self.statements:
+            as_source = "// %s" % statement.src
+            
+            arg_statement = ""
+            tokens = statement.get_tokens()
+            eq_seen = False
+
+            for t in tokens:
+                if(t == "="):
+                    eq_seen = True
+
+                if(self.is_argument(t)):
+                    argument_value = self.resolved_args[t]
+                    argument_info  = self.get_argument(t)
+
+                    if(argument_info.constant):
+                        arg_statement += "%s " % argument_value
+                        if(not eq_seen):
+                            log.error("Cannot assign to constant argument")
+                    elif(argument_info.variable and not eq_seen):
+                        arg_statement += "n_%s " % argument_value.name
+                    elif(argument_info.variable and eq_seen):
+                        arg_statement += "%s " % argument_value.name
+                    else:
+                        log.error("Argument neither constant or variable: '%s'" %argument_info.name)
+                else:
+                    arg_statement += "%s " % t
+            
+            arg_statement += "; %s" % as_source
+            tr.append(arg_statement)
+
+        return tr
 
 
 class UCInstructionCollection(object):

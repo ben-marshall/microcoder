@@ -7,9 +7,9 @@ module ucore_{{core_name}} (
     {%-  set direction = "" -%} 
 
     {%-  if(port.is_input)  -%}
-        {%-  set direction = "input " -%} 
+        {%-  set direction = "input     " -%} 
     {%-  elif(port.is_output)  -%}
-        {%-  set direction = "output" -%} 
+        {%-  set direction = "output reg" -%} 
     {%-  endif %}
 
 // {{port.description}}
@@ -25,6 +25,27 @@ input   wire aresetn
 );
 
 // --------------------------------------------------------------
+// Output port value registers
+//
+
+{% for port_name in ports.by_name | sort -%}
+{%-  set port = ports.by_name[port_name] -%} 
+{%-  if(port.is_output)  -%}
+reg [{{port.hi}}:{{port.lo}}] n_{{port.name}};
+
+always @(posedge clk, negedge aresetn) begin : progress_{{port.name}}
+    if(!aresetn) begin
+        {{port.name}} <= 'b0;
+    end else begin
+        {{port.name}} <= n_{{port.name}};
+    end
+end
+
+{%  endif %}
+{%- endfor %}
+
+
+// --------------------------------------------------------------
 // Program State Variables
 //
 
@@ -35,6 +56,14 @@ input   wire aresetn
 reg  [{{variable.hi}}:{{variable.lo}}]   {{variable.name}};
 reg  [{{variable.hi}}:{{variable.lo}}] n_{{variable.name}};
 
+always @(posedge clk, negedge aresetn) begin : progress_{{variable.name}}
+    if(!aresetn) begin
+        {{variable.name}} <= 'b0;
+    end else begin
+        {{variable.name}} <= n_{{variable.name}};
+    end
+end
+
 {% endfor %}
 
 // --------------------------------------------------------------
@@ -43,18 +72,9 @@ reg  [{{variable.hi}}:{{variable.lo}}] n_{{variable.name}};
 
 //
 // State encodings.
-{%- for block in program.blocks %}
-{%- set state_count = loop.index %}
-        
-    {%- if block.statements | length == 0 %}
-localparam state_{{block.name}} = {{state_count + loop.index}};
-    {%- else -%}
-    {%- for stm in block.statements %}
-localparam state_{{block.name}}_{{loop.index}} = {{state_count + loop.index}};
-    {%- endfor -%}
-    {%- endif  -%}
-
-{% endfor %}
+{%- for statename in program.synth_state_encodings() %}
+localparam {{statename}} = {{loop.index0}};
+{%- endfor %}
 
 //
 // Current and next state.
@@ -83,36 +103,26 @@ always @(*) begin : _select_next_state_
     _next_state_ = state_main_1;
 
     case (_current_state_)
-    {% for block in program.blocks %}
-    ////// Block: {{block.name}} //////
+{%- for block in program.blocks %}
 
-        {% set state_count = loop.index %}
-        {%- if block.statements | length == 0 -%}
+        // 
+        //  Block: {{block.name}}
+        //
+        {{program.get_block_state_name(block)}} : begin
+            
+            // Executed statements
+            {%- for statement in program.synth_block_statements(block) %}
+            {{statement}}
+            {%- endfor %}
 
-        state_{{block.name}} : begin
-            {{block.synth_flowchanges()}}
+            // Control flow changes
+            {%- for statement in program.synth_flowchanges(block) %}
+            {{statement}}
+            {%- endfor %}
         end
 
-        {% else -%}
-        {%- for stm in block.statements -%}
-        // Statement {{loop.index}} of block {{block.name}}
-        state_{{block.name}}_{{loop.index}} : begin
+{%- endfor %}
 
-            {% for op in stm.statements -%}
-            // {{op.src}}
-            {% endfor -%}
-                
-            {% if loop.last %}
-            {{block.synth_flowchanges()}}
-            {%- else -%}
-            _next_state_ = state_{{block.name}}_{{loop.index + 1}};
-            {%- endif %}
-        end
-
-        {% endfor -%}
-        {%- endif -%}
-
-    {% endfor %}
         default : begin
             // Do nothing.
         end

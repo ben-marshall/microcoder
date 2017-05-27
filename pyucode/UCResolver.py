@@ -16,6 +16,7 @@ from .UCState import UCProgramVariableCollection
 from .UCInstructions import UCInstruction
 from .UCInstructions import UCInstructionCollection
 
+from .UCProgram import UCProgramFlowChange
 from .UCProgram import UCProgramBlock
 from .UCProgram import UCProgram
 
@@ -141,6 +142,18 @@ class UCResolver(object):
 
                 else:
                     print("Unexpected statement type: %s" % statement_type)
+
+            if(len(block.flow_change) == 0):
+                # If a block has no flow changes listed, then add a goto
+                # targeting the next logical block in the program.
+                if(block.index+1 < len(self.program.blocks)):
+                    next_block = self.program.blocks[block.index+1].name
+                    toadd = UCProgramFlowChange("goto %s" % next_block)
+                    block.flow_change.append(toadd)
+                else:
+                    log.warn("The block '%s' is the final block in the program\
+                    and has no defined target block to jump to afterwards.\
+                    This can lead to unpredictable behaviour."%block.name)
             
             # Check that the jump (if any) at the end of the block goes
             # to the right place.

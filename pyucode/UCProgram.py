@@ -66,19 +66,7 @@ class UCProgramBlock(object):
         self.statements = statements
         self.flow_change = flow_change
         self.index = None
-    
-    def synth_statements(self):
-        """
-        Return a synthesised set of statements within the program block.
-        """
-        return "// TBD synth statements"
 
-    def synth_flowchanges(self):
-        """
-        Returns a synthesised decision tree of the program flow changes
-        at the end of the block.
-        """
-        return "// TBD synth flow changes"
 
 
 class UCProgram(object):
@@ -94,6 +82,81 @@ class UCProgram(object):
 
         self.blocks = []
         self.by_name= {}
+
+    def get_block_state_name(self,block):
+        """
+        Given a block, return its state name when being executed.
+        """
+        return "STATE_%s" % block.name.upper()
+    
+    def synth_block_statements(self,block):
+        """
+        Return a synthesised set of statements within the program block.
+        """
+        tr = []
+        for instruction in block.statements:
+            tr.append("// Instruction: %s" % instruction.name)
+
+            instr_statements = instruction.synth_statements()
+            tr += instr_statements
+
+        return tr
+    
+    def synth_state_encodings(self):
+        """
+        Return a list of state encoding name and value assignments.
+        """
+        tr = []
+
+        for block in self.blocks:
+
+            tr.append(self.get_block_state_name(block))
+
+        return tr
+
+
+    def synth_flowchanges(self, block):
+        """
+        Returns a synthesised decision tree of the program flow changes
+        at the end of the block.
+        """
+        has_compare = False
+        is_first    = True
+        tree = []
+        for flow_change in block.flow_change:
+            
+            target_state = self.get_block_state_name(flow_change.target)
+
+            if(flow_change.conditional):
+                has_compare = True
+                zero_cmp = ""
+                if(flow_change.change_type == UCProgramFlowIfEqz):
+                    cmp_type = " == 0"
+                elif(flow_change.change_type != UCProgramFlowIfNez):
+                    cmp_type = " != 0"
+                else:
+                    log.error("Unknown conditional jump type")
+
+                if(is_first):
+                    tree.append("if ( %s %s )" % 
+                        (flow_change.variable.name, cmp_type))
+                    tree.append("    _next_state_ = %s;" % target_state)
+                    is_first = False
+                else:
+                    tree.append("else if ( %s %s )" % 
+                        (flow_change.variable.name, cmp_type))
+                    tree.append("    _next_state_ = %s;\n" % target_state)
+
+            else:
+                pad =""
+                if(has_compare):
+                    tree.append("else")
+                    pad = "    "
+                tree.append("%s_next_state_ = %s;" % (pad,target_state))
+                break
+
+        return tree
+            
     
     def getBlock(self, name):
         """

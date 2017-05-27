@@ -129,10 +129,10 @@ class UCProgram(object):
 
             if(flow_change.conditional):
                 has_compare = True
-                zero_cmp = ""
+                cmp_type = ""
                 if(flow_change.change_type == UCProgramFlowIfEqz):
                     cmp_type = " == 0"
-                elif(flow_change.change_type != UCProgramFlowIfNez):
+                elif(flow_change.change_type == UCProgramFlowIfNez):
                     cmp_type = " != 0"
                 else:
                     log.error("Unknown conditional jump type")

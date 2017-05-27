@@ -1,0 +1,20 @@
+
+ports:
+    
+  n:
+    direction: in
+    range:     [5,0]
+    description: The n'th number in the fibonacci sequence to calculate.
+
+  valid:
+    direction: in
+    description: Signals the input number n is valid and to start computing.
+
+  done:
+    direction: out
+    description: Signals that the computation is complete.
+
+  result:
+    direction: out
+    range:     [63,0]
+    description: The result of computing the n'th fibonacci number

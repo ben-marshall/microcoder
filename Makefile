@@ -29,7 +29,7 @@ dirs:
 # Target to convert verilog files into icarus verilog simulation exes
 #
 %.sim : %.v
-	${VCC} -o $@  $< work/tb_out.v
+	${VCC} -o $@  $< work/tb_${EXAMPLE}.v
 
 
 run : $(SIM_FILE) $(VERILOG_SRC)

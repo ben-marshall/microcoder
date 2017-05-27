@@ -1,0 +1,14 @@
+
+program_state:
+  
+  counter:
+    range: [5,0]
+    description: count which number in the sequence we are upto.
+
+  num_a:
+    range: [63,0]
+    description: temporary state variable
+
+  num_b:
+    range: [63,0]
+    description: temporary state variable

@@ -9,6 +9,7 @@ SIM_FILE     = work/out.sim
 
 CC = ./compile.py
 VCC= iverilog
+VVP= vvp
 
 all: $(SIM_FILE) $(VERILOG_SRC)
 
@@ -26,4 +27,8 @@ dirs:
 # Target to convert verilog files into icarus verilog simulation exes
 #
 %.sim : %.v
-	${VCC} -o $@  $<
+	${VCC} -o $@  $< work/tb_out.v
+
+
+run : $(SIM_FILE) $(VERILOG_SRC)
+	$(VVP) $(SIM_FILE)

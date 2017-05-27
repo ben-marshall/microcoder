@@ -1,18 +1,5 @@
 ports:
 
-  data_valid:
-    direction: in
-    description: The input <data> port is valid.
-
-  data_in:
-    direction: in
-    range:     [7,0]
-    description: The data to be encrypted.
-
-  encrypt_done:
-    direction: out
-    description: We have finished encrypted the data. <data_out> is valid.
-
   data_out:
     direction: out
     range:     [7,0]

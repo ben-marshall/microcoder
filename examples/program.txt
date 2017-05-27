@@ -12,4 +12,5 @@ block loop
     goto    loop
 
 block finish
+    add_constant    var2 1
     goto finish

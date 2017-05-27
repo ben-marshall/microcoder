@@ -1,6 +1,7 @@
 
 block main
     
+    set         done    0
     set         num_a   0
     set         num_b   1
     set         counter 1
@@ -25,5 +26,6 @@ block continue
 
 block finished
     set         done    1
+    copy        result  num_a
     ifeqz       valid   finished
     goto        main

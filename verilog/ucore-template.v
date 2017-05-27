@@ -86,9 +86,10 @@ reg [11:0] _next_state_;
 // Process responsible for resetting and progressing the current state of the
 // FSM program.
 //
-always @(posedge clk, negedge resetn) begin : _progress_current_state_
-    if(!resetn) begin
-        _current_state_ <= state_main_1;
+always @(posedge clk, negedge aresetn) begin : _progress_current_state_
+    if(!aresetn) begin
+        _current_state_ <= {{program.get_block_state_name(
+                                        program.by_name["main"])}};
     end else begin
         _current_state_ <= _next_state_;
     end
@@ -100,7 +101,7 @@ end
 //
 always @(*) begin : _select_next_state_
     
-    _next_state_ = state_main_1;
+    _next_state_ = {{program.get_block_state_name(program.by_name["main"])}};
 
     case (_current_state_)
 {%- for block in program.blocks %}

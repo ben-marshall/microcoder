@@ -15,8 +15,8 @@ def parseArguments():
     parser.add_argument("ports",help="Description file for the ports")
     parser.add_argument("state",help="Description file for program state")
     parser.add_argument("instructions",help="Instructions definition file")
-    parser.add_argument("--output","-O",help="Output path", default="out.v")
     parser.add_argument("program",help="The program to compile.")
+    parser.add_argument("--output","-O",help="Output path", default="out.v")
 
     args = parser.parse_args()
     return args

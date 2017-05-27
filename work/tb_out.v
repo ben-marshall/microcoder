@@ -26,7 +26,7 @@ module tb_out ();
         end
     end
 
-    always @(clk) #5 clk = !clk;
+    always #5 clk = !clk;
 
     //
     // Instance the design under test.

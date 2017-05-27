@@ -8,9 +8,9 @@ This page describes the architecture of a microcore.
 ## Overview
 
 At a high level, a microcore is simply a finite state machine. Each state
-represents the execution of a single instruction within a program, and
-transitions between states represent the progression of execution through
-the program.
+represents the execution of a single basic block within a program, and
+transitions between states represent jumps of control flow between basic
+blocks within the program.
 
 Execution will always start in the `main` state and continue from there.
 
@@ -39,12 +39,9 @@ Execution will always start in the `main` state and continue from there.
 
 ## Program blocks
 
-- Each program block is implemented as a series of sequential states, each one
-  with a single instruction function call. Progression to the next state in a
-  block is un-conditional until the final instruction of the block.
+- Each program block is implemented as a series of sequential statements.
+  These statements are the expansion of all instructions within a basic block.
 - At the end of the block, the *next* block is computed based on the control
   flow statements at the end of the block.
 - Blocks with no explicit control flow statement simply carry on to the next
   block in the program sequence.
-
-

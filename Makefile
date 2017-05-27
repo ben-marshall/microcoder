@@ -1,11 +1,11 @@
 
-SRC_PORTS    = examples/ports.yaml
-SRC_STATE    = examples/state.yaml
-SRC_INSTRS   = examples/instructions.txt
-SRC_PROGRAM  = examples/program.txt
+SRC_PORTS    = examples/count-ports.yaml
+SRC_STATE    = examples/count-state.yaml
+SRC_INSTRS   = examples/count-instrs.txt
+SRC_PROGRAM  = examples/count-program.txt
 
-VERILOG_SRC  = work/out.v
-SIM_FILE     = work/out.sim
+VERILOG_SRC  = work/count.v
+SIM_FILE     = work/count.sim
 
 CC = ./compile.py
 VCC= iverilog

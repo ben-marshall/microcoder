@@ -71,6 +71,6 @@ can be viewed using a program like
 
 ## Todo
 
-- [ ] Make it possible to define ports and variables in the same file as
+- [X] Make it possible to define ports and variables in the same file as
       the rest of the program.
 - [ ] Generate documentation for programs automatically.

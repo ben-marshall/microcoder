@@ -1,7 +1,0 @@
-ports:
-
-  data_out:
-    direction: out
-    range:     [7,0]
-    description: The encrypted data.
-

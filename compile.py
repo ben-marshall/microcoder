@@ -12,8 +12,6 @@ def parseArguments():
     parse all command line arguments to the program.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("ports",help="Description file for the ports")
-    parser.add_argument("state",help="Description file for program state")
     parser.add_argument("instructions",help="Instructions definition file")
     parser.add_argument("program",help="The program to compile.")
     parser.add_argument("--output","-O",help="Output path", default="out.v")
@@ -30,9 +28,6 @@ def main():
     print("---------- uCode Compiler ----------")
     print("> Loading sources")
     
-    ports   = ucode.parsePortsYAML(args.ports)
-    state   = ucode.parseProgramVariablesYAML(args.state)
-    
     instrs  = ucode.UCInstructionCollection()
     instrs.parse(args.instructions)
 
@@ -42,8 +37,8 @@ def main():
     print("> Resolving objects")
 
     resolver = ucode.UCResolver()
-    resolver.addPorts(ports)
-    resolver.addVariables(state)
+    resolver.addPorts(program.ports)
+    resolver.addVariables(program.variables)
     resolver.addInstructions(instrs)
     resolver.addProgram(program)
 

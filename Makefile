@@ -1,8 +1,6 @@
 
 EXAMPLE = count
 
-SRC_PORTS    = examples/${EXAMPLE}/${EXAMPLE}-ports.yaml
-SRC_STATE    = examples/${EXAMPLE}/${EXAMPLE}-state.yaml
 SRC_INSTRS   = examples/${EXAMPLE}/${EXAMPLE}-instrs.txt
 SRC_PROGRAM  = examples/${EXAMPLE}/${EXAMPLE}-program.txt
 
@@ -21,8 +19,8 @@ dirs:
 #
 # Target to build verilog source files from the spec files for a program.
 #
-%.v : ${SRC_PORTS} ${SRC_STATE} ${SRC_INSTRS} ${SRC_PROGRAM} dirs
-	${CC} ${SRC_PORTS} ${SRC_STATE} ${SRC_INSTRS} ${SRC_PROGRAM} \
+%.v : ${SRC_INSTRS} ${SRC_PROGRAM} dirs
+	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
         --output $@
 
 #

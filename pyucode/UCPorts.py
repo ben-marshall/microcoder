@@ -20,7 +20,7 @@ class UCPort (object):
                        bits_hi      = 0, 
                        bits_lo      = 0, 
                        direction    = UCPortInput,
-                       description  = None):
+                       description  = ""):
         """
         Create a new UCPort Object
         """

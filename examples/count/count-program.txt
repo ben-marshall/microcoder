@@ -1,4 +1,9 @@
 
+port output data_out [7:0]
+
+state var1 [7:0]
+state var2
+
 block main
 
     set  var1    10

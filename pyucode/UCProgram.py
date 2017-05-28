@@ -7,6 +7,12 @@ import re
 import sys
 import logging as log
 
+from .UCPorts import UCPort
+from .UCPorts import UCPortCollection
+
+from .UCState import UCProgramVariable
+from .UCState import UCProgramVariableCollection
+
 UCProgramFlowNone   = 0
 UCProgramFlowGoto   = 1
 UCProgramFlowIfEqz  = 2
@@ -80,8 +86,12 @@ class UCProgram(object):
         """
         self.block_count = 0
 
-        self.blocks = []
-        self.by_name= {}
+        self.blocks     = []
+        self.blocks_by_name = {}
+
+        self.variables  = UCProgramVariableCollection()
+        self.ports      = UCPortCollection() 
+
 
     def get_block_state_name(self,block):
         """
@@ -163,8 +173,8 @@ class UCProgram(object):
         Return a block with the supplied name or None if it does not exist.
         """
 
-        if(name in self.by_name):
-            return self.by_name[name]
+        if(name in self.blocks_by_name):
+            return self.blocks_by_name[name]
         else:
             return None
     
@@ -175,8 +185,8 @@ class UCProgram(object):
         Returns None if no such block exists, or it has no next block.
         """
 
-        if(name in self.by_name):
-            block_i = self.by_name[name].index
+        if(name in self.blocks_by_name):
+            block_i = self.blocks_by_name[name].index
             return self.blocks[block_i]
         else:
             return None
@@ -187,13 +197,63 @@ class UCProgram(object):
         Add a new basic block to the program.
         """
         assert type(block) is UCProgramBlock, "block should be of type UCProgramBlock"
-        if not block.name in self.by_name:
+        if not block.name in self.blocks_by_name:
             block.index = self.block_count
             self.blocks.append(block)
-            self.by_name[block.name]=block
+            self.blocks_by_name[block.name]=block
             self.block_count = self.block_count + 1
         else:
             log.error("The block with name '%s' has already been declared"% block.name)
+
+
+    def addPort(self, lineNo,tokens):
+        """
+        Add a port parsed from a program file on the given line.
+        """
+        if(len(tokens) < 3):
+            log.error("Line %d: Bad Port declaration: '%s'\n\
+Port declaration should be of form: 'port <input|output> <port name> [hi:lo]"\
+% (" ".join(tokens),lineNo))
+        
+        name = tokens[2]
+
+        toadd = UCPort(name)
+        toadd.is_input = tokens[1] == "input"
+        toadd.is_output= tokens[1] == "output"
+        toadd.description = ""
+
+        if(len(tokens)> 3 and tokens[3][0] != "#"):
+            hilo = tokens[3].split(":")
+            hi   = int(hilo[0].lstrip("["))
+            lo   = int(hilo[1].rstrip("]\n"))
+            toadd.hi = hi
+            toadd.lo = lo
+            toadd.width = 1 + (hi - lo)
+        self.ports.addPort(toadd)
+
+
+    def addProgramVariable(self, lineNo,tokens):
+        """
+        Add a Program Variable parsed from a program file on the given line.
+        """
+        if(len(tokens) < 2):
+            log.error("Line %d: Bad Variable declaration: '%s'\n\
+Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
+% (" ".join(tokens),lineNo))
+        
+        name = tokens[1]
+
+        toadd = UCProgramVariable(name, description="")
+
+        if(len(tokens)> 2 and tokens[2][0] != "#"):
+            hilo = tokens[2].split(":")
+            hi   = int(hilo[0].lstrip("["))
+            lo   = int(hilo[1].rstrip("]\n"))
+            toadd.hi = hi
+            toadd.lo = lo
+            toadd.width = 1 + (hi - lo)
+        self.variables.addProgramVariable(toadd)
+
 
 
     def parseSource(self, filepath):
@@ -253,6 +313,11 @@ class UCProgram(object):
                     current_sub_block   = 1
                     current_flowchange  = []
                     pstate = BLOCK 
+
+                elif(tokens[0] == "port"):
+                    self.addPort(lno, tokens)
+                elif(tokens[0] == "state"):
+                    self.addProgramVariable(lno, tokens)
                 else:
                     pstate = ERROR
 
@@ -278,6 +343,10 @@ class UCProgram(object):
 
                 elif(tokens[0] in ["goto", "ifeqz", "ifnez"]):
                     current_flowchange.append(UCProgramFlowChange(line))
+                elif(tokens[0] == "port"):
+                    log.error("Line %d: Cannot put port declarations inside blocks." % lno)
+                elif(tokens[0] == "state"):
+                    log.error("Line %d: Cannot put state delcarations inside blocks." % lno)
                 else:
                     current_statements.append(line)
 

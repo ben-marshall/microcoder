@@ -171,7 +171,7 @@ class UCResolver(object):
                 jump_target = flow_change.target
                 if(type(jump_target) == str):
 
-                    if(jump_target in self.program.by_name):
+                    if(jump_target in self.program.blocks_by_name):
                         
                         tgt_block = self.program.getBlock(jump_target)
                         flow_change.target = tgt_block

@@ -298,6 +298,8 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
 
         for line in lines:
             lno += 1
+            if(line[0] == "#"):
+                continue
             tokens = line.split(" ")
 
             if(pstate == IGNORE):

@@ -65,6 +65,13 @@ number in the Fibonacci sequence.
 $> make all run EXAMPLE=fibonacci
 ```
 
+**DMA** - An example of a DMA memcopy co-processor which coppies multiple
+words from one memory base address to another.
+
+```sh
+$> make all run EXAMPLE=dma
+```
+
 The output wave files for both examples are written to `work/waves.vcd`. This
 can be viewed using a program like
 [GTKWave](http://iverilog.wikia.com/wiki/GTKWAVE).

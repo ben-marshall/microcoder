@@ -1,0 +1,65 @@
+
+// Set a variable to a constant value
+define set
+    argument variable var
+    argument constant val
+begin
+    var = val
+end
+
+// Copy one variable into another
+define copy
+    argument variable dest
+    argument variable source
+begin
+    dest = source
+end
+
+
+// Add two variables together and put the result in another variable.
+define add_vars
+    argument variable result
+    argument variable a
+    argument variable b
+begin
+    result = a + b
+end
+
+// Increment a variable by a constant value
+define inc
+    argument variable var
+    argument constant increment
+begin
+    var = var + increment
+end
+
+// decrement a variable by a constant value
+define dec
+    argument variable var
+    argument constant increment
+begin
+    var = var - increment
+end
+
+
+// Read an address (stored in a variable) into another variable.
+define mem_rd
+    argument variable address
+    argument variable destination
+begin
+    data_w_en   = 0
+    data_valid  = 1 && !data_en
+    data_addr   = address
+    destination = data_rdata
+end
+
+// write an address (stored in a variable) into another variable.
+define mem_wr
+    argument variable address
+    argument variable data
+begin
+    data_w_en   = 0
+    data_valid  = 1 && !data_en
+    data_addr   = address
+    data_wdata  = data
+end

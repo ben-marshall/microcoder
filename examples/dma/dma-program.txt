@@ -1,0 +1,107 @@
+
+#
+# A simple example of a DMA peripheral which can be programed to move data
+# from one memory address to another.
+#
+# It uses a simple SRAM interface to do the memory reading and writing, as well
+# as a few control signals to do the setup of the dma operation.
+#
+
+
+#
+# Program control port
+#
+
+port input  ctrl_valid
+port output ctrl_en
+port input  ctrl_src_addr_base   [31:0]
+port input  ctrl_dst_addr_base   [31:0]
+port input  ctrl_count           [7:0]
+port output ctrl_finished
+
+#
+# Program data port
+#
+
+port output data_addr            [31:0]
+port output data_wdata           [31:0]
+port input  data_rdata           [31:0]
+port output data_valid
+port output data_w_en
+port input  data_en
+
+
+#
+# Program variables
+#
+
+state   counter                  [7:0]
+state   temp_data                [31:0]
+state   dst_addr                 [31:0]
+state   src_addr                 [31:0]
+
+
+#
+# Program main block - execution starts here.
+#
+block main
+    
+    # Reset all out the outputs.
+    set     ctrl_en         0
+    set     ctrl_finished   0
+    set     data_addr       32'b0
+    set     data_wdata      32'b0
+    set     data_valid      0
+    set     data_w_en       0
+
+
+#
+# Loop inside this block waiting for the valid signals to go on the control
+# port. Register them when they do.
+#
+block   wait_for_command
+    
+    # Stay here until we get the right command.
+    ifeqz   ctrl_valid  wait_for_command
+    ifnez   ctrl_valid  store_inputs
+
+
+#
+# Now we have a valid command, store the data and signal we have the data.
+#
+block   store_inputs
+    
+    copy    counter         ctrl_count
+    copy    src_addr        ctrl_src_addr_base
+    copy    dst_addr        ctrl_dst_addr_base
+    set     ctrl_en         1
+
+    goto    dma_loop
+
+#
+# Outer loop of the dma operation.
+#
+block dma_loop
+    set     ctrl_en         0
+
+block do_read
+    mem_rd  src_addr        temp_data
+    ifeqz   data_en         do_read
+    ifnez   data_en         do_write
+
+block do_write
+    mem_wr  dst_addr        temp_data
+    ifeqz   data_en         do_write
+    ifnez   data_en         update_count
+
+block update_count
+    dec     counter         1
+    inc     src_addr        4
+    inc     dst_addr        4
+    set     data_valid      0
+    ifeqz   counter         finished
+    ifnez   counter         dma_loop
+
+block finished
+    set     ctrl_finished   1
+    goto    main

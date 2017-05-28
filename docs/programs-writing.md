@@ -7,12 +7,18 @@ using built-in control flow operations.
 
 ## Program blocks
 
-All programs start at the `main` block.
+All program execution starts at the `main` block. Ports and state variables
+must all be declared before the first block.
 
 Blocks consist of a `block <name>` statement, followed by one or more
 instructions. One instruction per line.
 
 ```
+
+<port declarations>
+
+<variable declarations>
+
 block main
 
     instr 0
@@ -49,6 +55,11 @@ undefined.
 
 
 ```
+
+port output port_1 [5:0]
+
+state var1 [5:0]
+
 block main
 
     set  var1    10

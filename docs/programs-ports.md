@@ -2,26 +2,23 @@
 
 # Specifying IO Ports.
 
-IO port specification is done using a YAML file with the following structure:
+IO port specification is done at the top of a program file, before we declare
+anything else.
 
-```yaml
-ports:
+**Grammar:**
 
-  <port name 1>
-   range:       [X, Y]
-   direction:   <in/out>
-   description: >
-    What does port 1 do?
-
-  <port name 2>
-   range:       [X, Y]
-   direction:   <in/out>
-   description: >
-    What does port 2 do?
+```verilog
+port <input|output> <portname> [<hi>:<lo>]
 ```
 
-As can be seen in the YAML snippet above, each port has the following
-properties:
+**Examples:**
+
+```verilog
+port input count [7:0]
+port output finished
+```
+
+Ports with no defined width are assumed to be 1-bit wide.
 
 ## Port Properties
 
@@ -35,27 +32,9 @@ any alpha-numeric characters and underscores.
 How wide is the port? Specified as a list where the first element is the
 highest bit, while the second element is the low bit.
 
-```yaml
-- range: [31,0] // Specifies a 32-bit wide port with a range from 31 to 0.
-- range: [31,2] // Specifies a 32-bit wide port ranging from 31 to 2.
-```
-
 ### direction    
 
 Is the port an input or an an output? Bi-directional ports are not supported.
-
-```yaml
-- direction: in     // An input port
-- direction: out    // An output port
-```
-
-If this field is omitted, then the range is assumed to be `[0:0]` which will
-create a 1-bit variable.
-
-### description
-
-This field is optional, but allows you to comment on exactly what the port is
-for.
 
 ## Example Port set
 
@@ -63,24 +42,9 @@ The ports below might describe a very simple "encryption" module, which takes
 eight bits at a time, does some encryption on them, and signals when it is
 finished.
 
-```yaml
-ports:
-
-- data_valid
-  - direction: in
-  - description: The input <data> port is valid.
-
-- data_in
-  - direction: in
-  - range:     [7:0]
-  - description: The data to be encrypted.
-
-- encrypt_done
-  - direction: out
-  - description: We have finished encrypted the data. <data_out> is valid.
-
-- data_out
-  - direction: out
-  - range:     [7:0]
-  - description: The encrypted data.
+```verilog
+port input  data_valid         # The input <data> port is valid.
+port input  data_in      [7:0] # The data to be encrypted.
+port output encrypt_done       # We have finished encrypting. <data_out> valid.
+port output data_out     [7:0]
 ```

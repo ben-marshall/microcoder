@@ -21,7 +21,8 @@ dirs:
 #
 %.v : ${SRC_INSTRS} ${SRC_PROGRAM} dirs
 	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
-        --output $@
+        --output $@ \
+        --gendocs --instrdocs work/doc-instrs.html
 
 #
 # Target to convert verilog files into icarus verilog simulation exes

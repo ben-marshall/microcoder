@@ -15,6 +15,11 @@ def parseArguments():
     parser.add_argument("instructions",help="Instructions definition file")
     parser.add_argument("program",help="The program to compile.")
     parser.add_argument("--output","-O",help="Output path", default="out.v")
+    parser.add_argument("--gendocs","-D", help="Generate documentation",
+        action="store_true")
+    parser.add_argument("--instrdocs", 
+                        help="Instruction documentation output file path",
+                        default = "doc-instrs.html")
 
     args = parser.parse_args()
     return args
@@ -48,6 +53,12 @@ def main():
 
     renderer = ucode.UCTemplater(resolver)
     renderer.renderTo(args.output)
+
+    if(args.gendocs):
+        print("> Rendering instruction documentation to %s" % args.instrdocs)
+        dg = ucode.UCInstructionDocGen(resolver.instrs)
+        dg.renderTo(args.instrdocs)
+
     
     print("> Done")
 

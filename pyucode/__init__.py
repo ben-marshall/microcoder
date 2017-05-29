@@ -26,3 +26,5 @@ from .UCProgram import UCProgram
 from .UCResolver import UCResolver
 
 from .UCTemplater import UCTemplater
+
+from .UCDocGen  import UCInstructionDocGen

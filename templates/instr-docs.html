@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{{pagetitle}}</title>
+<style type="text/css">
+    .instruction_listing{
+        float: left;
+        width:20%;
+        height: 100%;
+        margin-right: 10px;
+    }
+    .instruction_list_container{
+        float: left;
+        border-left: 2px solid silver;
+        padding-left: 10px;
+        width: 70%;
+    }
+    .instruction_container {
+        border-bottom: 2px solid silver;
+    }
+</style>
+</head>
+
+<body>
+<h1>Instruction Documentation</h1>
+<div class="instruction_listing">
+<ul>
+{% for instr_name in instrs.by_name | sort %}
+    {% set instr = instrs.by_name[instr_name] %}
+<li>{{instr.name}}</li>
+{% endfor %}
+</ul>
+</div>
+
+<div class="instruction_list_container">
+
+{% for instr_name in instrs.by_name | sort %}
+    {% set instr = instrs.by_name[instr_name] %}
+
+<div class="instruction_container">
+<h2>{{instr.name}}</h2>
+
+<p>{{instr.description}}</p>
+
+<p>
+<b>Usage:</b> <code>{{instr.name}}
+{% for arg in instr.arguments %}{{arg.name}} {% endfor %}
+</code>
+</p>
+
+<p>
+<b>Description:</b> {{instr.description}}
+</p>
+
+<p>
+<table><tr><td style="vertical-align:top;">
+<b>Arguments:</b>
+</td><td>
+{% for arg in instr.arguments %}
+<code>{{arg.src}}</code><br/>
+{% endfor %}
+</td></tr>
+<tr><td style="vertical-align:top;">
+<b>Operation:</b>
+    </td><td>
+    {% for stm in instr.statements%}
+    <code><b>{{loop.index}} :</b> {{stm.src}}</code><br/>
+    {% endfor %}
+</td></tr>
+</table>
+</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+
+</html> 

@@ -27,7 +27,7 @@ class UCTemplater(object):
         Render the ucore to the supplied output path.
         """
         
-        env      = Environment(loader=FileSystemLoader("./verilog/"))
+        env      = Environment(loader=FileSystemLoader("./templates/"))
         template = env.get_template("ucore-template.v")
 
         with open(output_path,"w") as fh:

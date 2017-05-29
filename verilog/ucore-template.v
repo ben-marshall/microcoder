@@ -100,6 +100,15 @@ end
 // Process responsible for selecting the next state in a program.
 //
 always @(*) begin : _select_next_state_
+
+    // All output ports keep their current value by default.
+
+{% for port_name in ports.by_name | sort -%}
+{%-  set port = ports.by_name[port_name] -%} 
+    {% if port.is_output -%}
+    n_{{port.name}} = {{port.name}};
+    {% endif %}
+{%- endfor %}
     
     _next_state_ = {{program.get_block_state_name(program.blocks_by_name["main"])}};
 

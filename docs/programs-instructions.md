@@ -55,7 +55,7 @@ define add_double_16
     argument variable [31:0] b
     argument variable [31:0] c
 begin
-    c[15: 0] = a[15: 0] + b[15: 0]
-    c[31:16] = a[31:16] + b[31:16]
+    c [15: 0] = a [15: 0] + b [15: 0]
+    c [31:16] = a [31:16] + b [31:16]
 end
 ```

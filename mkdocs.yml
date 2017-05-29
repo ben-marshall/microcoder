@@ -13,6 +13,7 @@ markdown_extensions:
 
 pages:
 - Overview: README.md
+- Usage: usage.md
 - Programs: 
   - Overview: programs.md
   - Ports: programs-ports.md

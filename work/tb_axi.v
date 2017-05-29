@@ -76,6 +76,7 @@ module tb_out ();
             end
             
             @(posedge clk) begin
+                m_axi_arready = 1'b0;
                 m_axi_rdata = $random;
                 m_axi_rvalid = 1'b1;
             end
@@ -92,6 +93,17 @@ module tb_out ();
     // Start all the different channel handlers off on separate threads.
     //
     initial begin
+        m_axi_arready=0;
+        m_axi_awready=0;
+        m_axi_bid=0;
+        m_axi_bresp=0;
+        m_axi_bvalid=0;
+        m_axi_rdata=0;
+        m_axi_rid=0;
+        m_axi_rlast=0;
+        m_axi_rresp=0;
+        m_axi_rvalid=0;
+        m_axi_wready=0;
         fork
             handle_reads();
         join

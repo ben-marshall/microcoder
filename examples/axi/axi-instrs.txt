@@ -14,6 +14,16 @@ begin
     destination = port
 end
 
+//
+// setc: Set a variable to a constant value.
+//
+define setc
+    argument variable destination
+    argument constant value
+begin
+    destination = value
+end
+
 
 //
 // addc: Add a constant to a variable

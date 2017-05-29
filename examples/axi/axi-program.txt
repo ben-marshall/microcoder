@@ -69,6 +69,9 @@ block main
     axi_w_setup
     axi_r_setup
 
+    setc    address_counter 0
+    setc    read_data       0
+
     goto post_setup
 
 #
@@ -107,4 +110,4 @@ block ax_load_word_wait
 
 
 block ax_load_word_done
-    goto            main
+    goto            post_setup

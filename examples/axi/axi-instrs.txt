@@ -14,6 +14,17 @@ begin
     destination = port
 end
 
+
+//
+// addc: Add a constant to a variable
+//
+define addc
+    argument variable destination
+    argument constant value
+begin
+    destination = destination + value
+end
+
 // ---------------------------------------------------------------------------
 // ## AR channel
 // ---------------------------------------------------------------------------

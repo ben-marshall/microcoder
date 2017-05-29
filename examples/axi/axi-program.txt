@@ -75,8 +75,9 @@ block main
 # Now that the AXI channels are setup, we can do some playing around.
 #
 block post_setup
-
-    goto post_setup
+    
+    addc    address_counter     4
+    goto    ax_load_word
 
 
 block ax_load_word

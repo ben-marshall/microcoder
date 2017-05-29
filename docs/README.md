@@ -8,8 +8,8 @@ synthesisable verilog code. This verilog code can then be implemented on
 an FPGA.
 
 More information on what this tool might be used for is found 
-[here](usage.md). There is also a **walkthrough example** [
-here](example-dma.md).
+[here](usage.md). There is also a **walkthrough example** 
+[here](example-dma.md).
 
 ---
 

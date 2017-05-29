@@ -72,7 +72,7 @@ class UCInstruction(object):
     Represents a single instruction
     """
 
-    def __init__(self, name, arguments, statements):
+    def __init__(self, name, arguments, statements, desc=""):
         """
         Create a new instruction with the supplied name, list of arguments
         and list of statements.
@@ -82,6 +82,7 @@ class UCInstruction(object):
         self.arguments  = arguments
         self.statements = statements
         self.resolved_args = {}
+        self.description = desc
 
 
     def is_argument(self, token):
@@ -190,7 +191,7 @@ class UCInstructionCollection(object):
         with open(filepath,"r") as fh:
             lines = fh.readlines()
             lines = [l.strip(" \n") for l in lines]
-            lines = [l for l in lines if l != "" and not l.startswith("//")]
+            lines = [l for l in lines if l != ""]
             lines = [re.sub(" +"," ",l) for l in lines]
     
         IGNORE=1
@@ -201,6 +202,7 @@ class UCInstructionCollection(object):
         pstate = IGNORE
         lno    = 0
 
+        current_comment     = ""
         current_name        = None
         current_args        = []
         current_statements  = []
@@ -209,6 +211,10 @@ class UCInstructionCollection(object):
         for line in lines:
             lno += 1
             tokens = line.split(" ")
+
+            if(line.startswith("//")):
+                current_comment += line[2:] + "\n"
+                continue
 
             if   ( pstate == IGNORE     ):
 
@@ -233,17 +239,19 @@ class UCInstructionCollection(object):
                 if(tokens[0] == "end"):
                     instr_to_add = UCInstruction(current_name,
                                                  current_args,
-                                                 current_statements)
+                                                 current_statements,
+                                                 desc=current_comment)
                     self.addInstruction(instr_to_add)
                     current_name = None
                     current_args = []
                     current_statements = []
+                    current_comment = ""
                     pstate = IGNORE 
                 else:
                     current_statements.append(UCInstructionStatement(src=line))
 
             else:
-                print("Parse error on line %d" % lno + 1)
+                print("Parse error on line %d" % (lno))
                 break
 
 

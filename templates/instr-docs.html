@@ -4,14 +4,29 @@
 <meta charset="UTF-8">
 <title>{{pagetitle}}</title>
 <style type="text/css">
+body{margin:40px
+auto;line-height:1.4;font-size:16px;color:#444;padding:0
+10px; max-width: 800px;
+font-family: Helvetica Neue,Helvetica,Arial,sans-serif;}
+h1,h2,h3{line-height:1.2}
+    
+    code{
+        background-color: #F0F0F0;
+        color: black;
+        display: block;
+        padding: 2px;
+    }
+    .codepad{
+        padding: 5px;
+        border: 1px solid #777;
+    }
+
     .instruction_listing{
-        float: left;
         width:20%;
         height: 100%;
         margin-right: 10px;
     }
     .instruction_list_container{
-        float: left;
         border-left: 2px solid silver;
         padding-left: 10px;
         width: 70%;
@@ -28,7 +43,7 @@
 <ul>
 {% for instr_name in instrs.by_name | sort %}
     {% set instr = instrs.by_name[instr_name] %}
-<li>{{instr.name}}</li>
+<li><a href="#i_{{instr.name}}">{{instr.name}}</a></li>
 {% endfor %}
 </ul>
 </div>
@@ -39,34 +54,35 @@
     {% set instr = instrs.by_name[instr_name] %}
 
 <div class="instruction_container">
-<h2>{{instr.name}}</h2>
+<h2><a name="i_{{instr.name}}">{{instr.name}}</a></h2>
 
 <p>{{instr.description}}</p>
 
 <p>
-<b>Usage:</b> <code>{{instr.name}}
+<table>
+<tr>
+<td><b>Usage:</b></td><td> <code>{{instr.name}}
 {% for arg in instr.arguments %}{{arg.name}} {% endfor %}
 </code>
-</p>
-
-<p>
-<b>Description:</b> {{instr.description}}
-</p>
-
-<p>
-<table><tr><td style="vertical-align:top;">
+</td></tr>
+<tr>
+<td style="vertical-align:top;">
 <b>Arguments:</b>
 </td><td>
+<code>
 {% for arg in instr.arguments %}
-<code>{{arg.src}}</code><br/>
+{{arg.src}}<br/>
 {% endfor %}
+</code>
 </td></tr>
 <tr><td style="vertical-align:top;">
 <b>Operation:</b>
     </td><td>
+<code class="codepad">
     {% for stm in instr.statements%}
-    <code><b>{{loop.index}} :</b> {{stm.src}}</code><br/>
+    <b>{{loop.index}} :</b> {{stm.src}}<br/>
     {% endfor %}
+</code>
 </td></tr>
 </table>
 </p>

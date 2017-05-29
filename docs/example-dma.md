@@ -272,6 +272,36 @@ easily by running:
 
 ```sh
 $> make run EXAMPLE=dma
+mkdir -p ./work
+./compile.py examples/dma/dma-instrs.txt examples/dma/dma-program.txt \
+--output work/dma.v \
+--gendocs --instrdocs work/doc-instrs.html
+---------- uCode Compiler ----------
+> Loading sources
+Add block 'main'
+Add block 'wait_for_command'
+Add block 'store_inputs'
+Add block 'dma_loop'
+Add block 'do_read'
+Add block 'do_write'
+Add block 'update_count'
+Add block 'finished'
+> Resolving objects
+Block: main
+Block: wait_for_command
+Block: store_inputs
+Block: dma_loop
+Block: do_read
+Block: do_write
+Block: update_count
+Block: finished
+> Rendering template to work/dma.v
+> Rendering instruction documentation to work/doc-instrs.html
+> Done
+iverilog -o work/dma.sim  work/dma.v work/tb_dma.v
+vvp work/dma.sim
+VCD info: dumpfile work/waves.vcd opened for output.
+$> _
 ```
 
 This will build the example program and simulate it. You can examine the

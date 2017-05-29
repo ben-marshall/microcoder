@@ -1,6 +1,8 @@
 
 # uCode
 
+[![Documentation Status](https://readthedocs.org/projects/microcoder/badge/?version=latest)](http://microcoder.readthedocs.io/en/latest/?badge=latest)
+
 A toy project for turning user-defined assembly-like programs into 
 synthesisable verilog code. This verilog code can then be implemented on
 an FPGA.

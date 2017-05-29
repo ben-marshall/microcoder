@@ -1,6 +1,10 @@
 site_name: uCode
 
+site_author: Ben Marshall
+
 theme: readthedocs
+
+repo_name: https://github.com/ben-marshall/microcoder
 
 markdown_extensions:
 - smarty

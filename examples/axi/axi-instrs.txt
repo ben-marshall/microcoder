@@ -1,0 +1,155 @@
+
+
+// ---------------------------------------------------------------------------
+// ## Miscellaneous instructions.
+// ---------------------------------------------------------------------------
+
+//
+// rd_port: Copy the value of an input port into a state variable
+//
+define rd_port
+    argument variable destination
+    argument variable port
+begin
+    destination = port
+end
+
+// ---------------------------------------------------------------------------
+// ## AR channel
+// ---------------------------------------------------------------------------
+
+
+//
+// Responsible for setting up the Address Read channel outputs post-reset.
+//
+define axi_ar_setup
+begin
+    m_axi_araddr    = 1'b0
+    m_axi_arburst   = 2'b0
+    m_axi_arcache   = 4'b0
+    m_axi_arid      = 4'b0
+    m_axi_arlen     = 8'b0
+    m_axi_arlock    = 2'b0
+    m_axi_arprot    = 3'b0
+    m_axi_arqos     = 4'b0
+    m_axi_arsize    = 3'b0
+    m_axi_arvalid   = 1'b0
+end
+
+
+//
+// Start an address read transaction of 4 bytes from the supplied address
+//
+define axi_ar_lw_init
+    argument variable   [31:0] address
+begin
+    m_axi_araddr    = address [31:2]
+    m_axi_arid      = 4'b0
+    // Read 4 bytes
+    m_axi_arsize    = 3'b010
+    m_axi_arvalid   = 1'b1 && !m_axi_arready
+end
+
+
+//
+// End an AR channel transaction by putting the valid signal low.
+//
+define axi_ar_end
+begin
+    m_axi_arvalid   = 1'b0
+end
+
+
+// ---------------------------------------------------------------------------
+// ## AW channel
+// ---------------------------------------------------------------------------
+
+
+//
+// Responsible for setting up the Address Write channel outputs post-reset.
+//
+define axi_aw_setup
+begin
+    m_axi_awaddr    = 1'b0
+    m_axi_awburst   = 2'b0
+    m_axi_awcache   = 4'b0
+    m_axi_awid      = 4'b0
+    m_axi_awlen     = 8'b0
+    m_axi_awlock    = 2'b0
+    m_axi_awprot    = 3'b0
+    m_axi_awqos     = 4'b0
+    m_axi_awsize    = 3'b0
+    m_axi_awvalid   = 1'b0
+end
+
+//
+// End an AW channel transaction by putting the valid signal low.
+//
+define axi_aw_end
+begin
+    m_axi_awvalid   = 1'b0
+end
+
+// ---------------------------------------------------------------------------
+// ## B channel
+// ---------------------------------------------------------------------------
+
+//
+// Responsible for setting up the Write response outputs post-reset.
+//
+define axi_b_setup
+begin
+    m_axi_bready    = 1'b0
+end
+
+//
+// Acknowledge a write response by putting the bresp line high.
+//
+define axi_b_ack
+begin
+    m_axi_bready = 1'b1
+end
+
+// ---------------------------------------------------------------------------
+// ## R channel
+// ---------------------------------------------------------------------------
+
+//
+// Responsible for setting up the Read response outputs post-reset.
+//
+define axi_r_setup
+begin
+    m_axi_rready    = 1'b0
+end
+
+//
+// Acknowledge a read response by putting the rresp line high.
+//
+define axi_r_ack
+begin
+    m_axi_rready = 1'b1
+end
+
+// ---------------------------------------------------------------------------
+// ## W channel
+// ---------------------------------------------------------------------------
+
+//
+// Responsible for setting up the write data channel outputs post-reset.
+//
+define axi_w_setup
+begin
+    m_axi_wdata     = 128'b0
+    m_axi_wlast     = 1'b0  
+    m_axi_wstrb     = 16'b0 
+    m_axi_wvalid    = 1'b0       
+end
+
+
+//
+// Finish a write data channel transaction.
+//
+define axi_w_end
+begin
+    m_axi_wvalid = 1'b0
+end

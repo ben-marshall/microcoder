@@ -1,0 +1,109 @@
+
+#
+# A simple program and associated instructions for interracting with AXI
+# bus channels.
+#
+    
+port output m_axi_araddr     [27:0] 
+port output m_axi_arburst    [1:0]  
+port output m_axi_arcache    [3:0]  
+port output m_axi_arid       [3:0]  
+port output m_axi_arlen      [7:0]  
+port output m_axi_arlock            
+port output m_axi_arprot     [2:0]  
+port output m_axi_arqos      [3:0]  
+port input  m_axi_arready           
+port output m_axi_arsize     [2:0]  
+port output m_axi_arvalid           
+                                    
+port output m_axi_awaddr     [27:0] 
+port output m_axi_awburst    [1:0]  
+port output m_axi_awcache    [3:0]  
+port output m_axi_awid       [3:0]  
+port output m_axi_awlen      [7:0]  
+port output m_axi_awlock            
+port output m_axi_awprot     [2:0]  
+port output m_axi_awqos      [3:0]  
+port input  m_axi_awready           
+port output m_axi_awsize     [2:0]  
+port output m_axi_awvalid           
+                                    
+port input  m_axi_bid        [3:0]   
+port output m_axi_bready            
+port input  m_axi_bresp      [1:0]   
+port input  m_axi_bvalid            
+                                    
+port input  m_axi_rdata      [127:0] 
+port input  m_axi_rid        [3:0]   
+port input  m_axi_rlast             
+port output m_axi_rready            
+port input  m_axi_rresp      [1:0]   
+port input  m_axi_rvalid            
+                                    
+port output m_axi_wdata      [127:0]
+port output m_axi_wlast             
+port input  m_axi_wready            
+port output m_axi_wstrb      [15:0] 
+port output m_axi_wvalid            
+
+# -----------------------------------------------------------------------------
+
+# Somewhere to keep the addresses.
+state   address_counter     [31:0]
+
+# Somewhere we can store the read data from the AXI R data channel.
+state   read_data           [31:0]
+
+
+# -----------------------------------------------------------------------------
+
+#
+# Program execution starts here. For now, just setup all of the AXI channels
+# such that they are all zeros.
+#
+block main
+    
+    axi_ar_setup
+    axi_aw_setup
+    axi_b_setup
+    axi_w_setup
+    axi_r_setup
+
+    goto post_setup
+
+#
+# Now that the AXI channels are setup, we can do some playing around.
+#
+block post_setup
+
+    goto post_setup
+
+
+block ax_load_word
+    
+    # Initiate the AXI read transaction
+    axi_ar_lw_init  address_counter
+
+    # Wait for the read request to be acknowledged
+    ifeqz           m_axi_arready   ax_load_word
+    goto            ax_load_word_wait
+
+block ax_load_word_wait
+
+    # Finish the previous read transaction.
+    axi_ar_end
+
+    # Signal that whenever the valid signal does come through, we are
+    # Already ready for the response.
+    axi_r_ack
+
+    # Store the recieved data
+    rd_port         read_data       m_axi_rdata
+
+    # Wait for the read response to be valid.
+    ifeqz           m_axi_rvalid    ax_load_word_wait
+    goto            ax_load_word_done
+
+
+block ax_load_word_done
+    goto            main

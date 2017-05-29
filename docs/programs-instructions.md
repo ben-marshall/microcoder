@@ -48,7 +48,7 @@ begin
     d = (a * b) + c
 end
 
-// Split two 32 bit variables into 4 16 bit varables and add them together.
+// Split two 32 bit variables into 4 16 bit variables and add them together.
 // Store the result in a different variable.
 define add_double_16
     argument variable [31:0] a

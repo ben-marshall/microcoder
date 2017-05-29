@@ -8,7 +8,7 @@ anything else.
 **Grammar:**
 
 ```verilog
-port <input|output> <portname> [<hi>:<lo>]
+port <input|output> <port-name> [<hi>:<lo>]
 ```
 
 **Examples:**

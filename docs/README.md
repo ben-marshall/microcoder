@@ -28,7 +28,7 @@ Currently, one can use the tool to:
   operations on those arguments.
 - Define arbitrary inputs and outputs to the micro-code program, known as 
   *ports*.
-- Define global state variables which the instructions can access and modfy.
+- Define global state variables which the instructions can access and modify.
 - Write assembly-like programs, with basic blocks, instructions and
   conditional jumps between those blocks.
 
@@ -43,7 +43,7 @@ These same files are also hosted on
 
 ## Examples
 
-There are some simple examples bundled with the repositiory:
+There are some simple examples bundled with the repository:
 
 **Counter** - This is a really boring counter which simply counts down
 from 10 and then loops. Forever.

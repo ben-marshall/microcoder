@@ -1,13 +1,13 @@
 
 # uCore Architecture
 
-This page describes the architecture of a microcore.
+This page describes the architecture of a micro-core.
 
 ---
 
 ## Overview
 
-At a high level, a microcore is simply a finite state machine. Each state
+At a high level, a micro-core is simply a finite state machine. Each state
 represents the execution of a single basic block within a program, and
 transitions between states represent jumps of control flow between basic
 blocks within the program.

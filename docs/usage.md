@@ -70,10 +70,10 @@ into hardware much easier for the sake of prototyping.
 
 Conceptually, a typical flow for using this tool might look like:
 
-1. Define a set of input and output signals that a microcore.
-2. Define the amount of readable / writable program state a microcore will
+1. Define a set of input and output signals that a micro-core.
+2. Define the amount of readable / writable program state a micro-core will
    have access to. These are analogous to the "registers" of a normal CPU.
-3. Define the set of instructions that the microcore will be able to
+3. Define the set of instructions that the micro-core will be able to
    perform.
 4. Write a top-level microcode which will "run" on the core.
 5. Generate the synthesisable verilog.

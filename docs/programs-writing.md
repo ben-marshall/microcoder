@@ -36,7 +36,7 @@ There are three kinds of control flow operations supplied:
 
 - `goto <block>`
 
-The `goto` operation will immediatly and unconditionally move control flow of
+The `goto` operation will immediately and unconditionally move control flow of
 the program to the start of the named block.
 
 - `ifeqz <variable> <block>`

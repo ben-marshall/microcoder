@@ -14,8 +14,9 @@ from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
 from .UCState import parseProgramVariablesYAML
 
+from .UCInstructionStatement import UCInstructionStatement
+
 from .UCInstructions import UCInstructionArgument
-from .UCInstructions import UCInstructionStatement
 from .UCInstructions import UCInstruction
 from .UCInstructions import UCInstructionCollection
 

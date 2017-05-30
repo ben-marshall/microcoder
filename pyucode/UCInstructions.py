@@ -7,6 +7,8 @@ import re
 import sys
 import logging as log
 
+from .UCInstructionStatement import UCInstructionStatement
+
 class UCInstructionArgument(object):
 
     def __init__(self, src=None):
@@ -42,29 +44,6 @@ class UCInstructionArgument(object):
             bits_split = bits.split(":")
             self.hi = int(bits_split[0])
             self.lo = int(bits_split[1])
-
-
-class UCInstructionStatement(object):
-
-    def __init__(self, src=None):
-        """
-        Create a new instruction behaviour statement using a string source.
-        """
-
-        if src != None:
-            self.parse(src)
-
-    def get_tokens(self):
-        """
-        Return a string tokenised version of the sourcefor this statement.
-        """
-        return self.src.split(" ")
-
-    def parse(self, src):
-        """
-        Parse the string representation of the statement 
-        """
-        self.src = src
 
 
 class UCInstruction(object):

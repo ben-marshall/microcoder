@@ -191,16 +191,20 @@ block proc_set_counter
 block proc_uart_to_mem
 
     ifeqz   op_counter      idle_loop
+    ifeqz   uart_interrupt  proc_uart_to_mem
+    goto    u2m_get_uart_data
 
     block   u2m_get_uart_data
         setifel uart_rcen       uart_rack       4'b0000     4'b0001
         cpy     mem_wdata       uart_rdata
-        ifnez   uart_rack       u2m_write_to_mem
+        ifeqz   uart_rack       u2m_get_uart_data
+        goto    u2m_write_to_mem
     
     block   u2m_write_to_mem
         setifel mem_cen         mem_ack         1'b0        1'b1
         setifel mem_wen         mem_ack         1'b0        1'b1
         ifnez   mem_ack         u2m_write_to_mem
+        goto    u2m_adjust_pointers
 
     block   u2m_adjust_pointers
 
@@ -217,26 +221,33 @@ block proc_uart_to_mem
 block proc_mem_to_uart
 
     ifeqz   op_counter      idle_loop
+    ifeqz   uart_interrupt  proc_mem_to_uart
+    goto    m2u_get_uart_status
 
     block   m2u_get_uart_status
         setifel uart_rcen       uart_rack       4'b0000     4'b1000
         cpy     tmp_data        uart_rdata
         ifnez   uart_rack       m2u_get_uart_status
+        goto    m2u_mask_uart_status
     
     block   m2u_mask_uart_status
         msk     scratch_0       tmp_data        8'b00001000
+        goto    m2u_check_tx_not_full
     
     block   m2u_check_tx_not_full
         ifnez   scratch_0       m2u_get_uart_status
+        goto    m2u_get_mem_data
     
     block   m2u_get_mem_data
         setifel mem_cen         mem_ack         1'b0        1'b1
         set     mem_wen         1'b0
-        ifnez   mem_ack         m2u_get_mem_data
+        ifeqz   mem_ack         m2u_get_mem_data
+        goto    m2u_write_to_uart
     
     block   m2u_write_to_uart
         setifel uart_wcen       uart_wack       4'b0000     4'b0010
-        ifnez   uart_wack       m2u_write_to_uart
+        ifeqz   uart_wack       m2u_write_to_uart
+        goto    m2u_adjust_pointers
 
     block   m2u_adjust_pointers
 

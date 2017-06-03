@@ -127,13 +127,36 @@ module tb_out ();
         send_uart_cmd(8'h00);   // NOP       
         send_uart_cmd(8'h00);   // NOP       
         send_uart_cmd(8'h02);   // Set Counter
-        send_uart_cmd(8'h80);   // Counter Value
+        send_uart_cmd(8'h10);   // Counter Value
+
         send_uart_cmd(8'h00);   // NOP       
         send_uart_cmd(8'h01);   // Set Address
-        send_uart_cmd(8'hAB);   // Set Address b3
-        send_uart_cmd(8'hCD);   // Set Address b2
-        send_uart_cmd(8'hEF);   // Set Address b1
-        send_uart_cmd(8'h11);   // Set Address b0
+        send_uart_cmd(8'hA0);   // Set Address b3
+        send_uart_cmd(8'hB0);   // Set Address b2
+        send_uart_cmd(8'hC0);   // Set Address b1
+        send_uart_cmd(8'hD0);   // Set Address b0
+        
+        send_uart_cmd(8'h00);   // NOP       
+        send_uart_cmd(8'h04);   // Start write to mem sequence.
+        
+        send_uart_cmd(8'h01);   // Set Address
+        send_uart_cmd(8'hA0);   // Set Address b3
+        send_uart_cmd(8'hB0);   // Set Address b2
+        send_uart_cmd(8'hC0);   // Set Address b1
+        send_uart_cmd(8'hD0);   // Set Address b0
+        
+        send_uart_cmd(8'h00);   // NOP       
+        send_uart_cmd(8'h00);   // NOP       
+        
+        send_uart_cmd(8'h02);   // Set Counter
+        send_uart_cmd(8'h10);   // Counter Value
+        
+        send_uart_cmd(8'h00);   // NOP       
+        send_uart_cmd(8'h08);   // Start read from mem sequence
+        
+        repeat(15) begin
+            send_uart_cmd($random);
+        end
 
     end endtask
 

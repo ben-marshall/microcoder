@@ -83,3 +83,16 @@ define dec
 begin
     var = var - val
 end
+
+
+
+// ---------------------------------------------------------------------------
+//
+// Increment a variable by a constant amount.
+//
+define inc
+    argument variable var
+    argument constant val
+begin
+    var = var + val
+end

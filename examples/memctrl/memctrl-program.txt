@@ -10,10 +10,10 @@
 
 port input  uart_interrupt
 port input  uart_rdata      [7:0]
-port output uart_rcen       [7:0]
+port output uart_rcen       [3:0]
 port input  uart_rack
 port output uart_wdata      [7:0]
-port output uart_wcen       [7:0]
+port output uart_wcen       [3:0]
 port input  uart_wack
 
 port output mem_cen         
@@ -49,6 +49,18 @@ block main
 
     set mem_cen     1'b0
 
+    goto configure_uart
+
+
+# ----------------------------------------------------------------------------
+#
+# Configure the UART block
+#
+block configure_uart
+
+    set     uart_wdata      8'b0001_0011
+    setifel uart_wcen       uart_wack       4'b0000     4'b1000
+    ifnez   uart_rack       configure_uart
     goto idle_loop
 
 
@@ -58,6 +70,9 @@ block main
 #
 block idle_loop
     
+    set     uart_rcen       4'b0
+    set     uart_wcen       4'b0
+
     ifnez   uart_interrupt  read_uart_cmd
     goto    idle_loop
 
@@ -110,28 +125,45 @@ block decode_uart_cmd
 #   expect the MS byte first, and for the address to be in little endian.
 #
 block proc_set_addr_pointer
+    ifeqz   uart_interrupt  proc_set_addr_pointer
+    goto    get_ap_byte_3
     
     block get_ap_byte_3
         setifel uart_rcen       uart_rack       4'b0000     4'b0001
         setbyte mem_addr        3               uart_rdata
-        ifnez   uart_rack       get_ap_byte_3
+        ifeqz   uart_rack       get_ap_byte_3
+        goto    wait_for_next_interrupt_ap_1
+    
+    block wait_for_next_interrupt_ap_1
+        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_1
+        goto    get_ap_byte_2
     
     block get_ap_byte_2
         setifel uart_rcen       uart_rack       4'b0000     4'b0001
         setbyte mem_addr        2               uart_rdata
-        ifnez   uart_rack       get_ap_byte_2
+        ifeqz   uart_rack       get_ap_byte_2
+        goto    wait_for_next_interrupt_ap_2
+    
+    block wait_for_next_interrupt_ap_2
+        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_2
+        goto    get_ap_byte_1
     
     block get_ap_byte_1
         setifel uart_rcen       uart_rack       4'b0000     4'b0001
         setbyte mem_addr        1               uart_rdata
-        ifnez   uart_rack       get_ap_byte_1
+        ifeqz   uart_rack       get_ap_byte_1
+        goto    wait_for_next_interrupt_ap_3
+    
+    block wait_for_next_interrupt_ap_3
+        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_3
+        goto    get_ap_byte_0
     
     block get_ap_byte_0
         setifel uart_rcen       uart_rack       4'b0000     4'b0001
         setbyte mem_addr        0               uart_rdata
-        ifnez   uart_rack       get_ap_byte_0
+        ifeqz   uart_rack       get_ap_byte_0
 
-    goto main
+    goto idle_loop
 
 # ============================================================================
 #
@@ -139,11 +171,17 @@ block proc_set_addr_pointer
 # Wait for the next byte to be recieved and set the counter to that value.
 #
 block proc_set_counter
+
+    block wait_for_next_interrupt
+        ifeqz   uart_interrupt  wait_for_next_interrupt
+        goto    get_counter_value
+
+    block get_counter_value
     
-    setifel uart_rcen       uart_rack       4'b0000     4'b0001
-    cpy     op_counter      uart_rdata
-    ifnez   uart_rack       proc_set_counter
-    goto    idle_loop
+        setifel uart_rcen       uart_rack       4'b0000     4'b0001
+        cpy     op_counter      uart_rdata
+        ifeqz   uart_rack       get_counter_value
+        goto    idle_loop
 
 
 # ============================================================================

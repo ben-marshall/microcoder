@@ -1,0 +1,85 @@
+
+//
+// Instructions for the memctrl program
+//
+//  A program which waits for an interrupt from a UART module, reads the
+//  status of the UART and the data recieved.
+//
+
+
+// ---------------------------------------------------------------------------
+//
+// Mask a variable using a constant value mask, putting the 1 bit result
+// in another variable.
+//
+define msk
+    argument variable result
+    argument variable val
+    argument constant mask
+begin
+    result = ( val & mask ) ? 1'b1 : 1'b0
+end
+
+
+// ---------------------------------------------------------------------------
+//
+// Given a multi-byte variable, set the N'th byte to the supplied value.
+//
+define setbyte
+    argument variable var   
+    argument constant n   
+    argument constant byte_val
+begin
+    var = var &  ~( 32'hFF << n * 8 ) | ( byte_val << n * 8 )
+end
+
+// ---------------------------------------------------------------------------
+//
+// Set a variable to a constant value
+//
+define set
+    argument variable var
+    argument constant val
+begin
+    var = val
+end
+
+
+// ---------------------------------------------------------------------------
+//
+// If <cond> is true, set <var> to <val_true>, otherwise set <var> to 
+// <val_false>. In this case <cond> evaluates to true if it is anything other
+// than zero.
+//
+define setifel
+    argument variable var
+    argument variable cond
+    argument constant val_true
+    argument constant val_false
+begin
+    var = cond ? val_true : val_false
+end
+
+
+// ---------------------------------------------------------------------------
+//
+// Copy one variable into another
+//
+define cpy
+    argument variable dest
+    argument variable source
+begin
+    dest = source
+end
+
+
+// ---------------------------------------------------------------------------
+//
+// Decrement a variable by a constant amount.
+//
+define dec
+    argument variable var
+    argument constant val
+begin
+    var = var - val
+end

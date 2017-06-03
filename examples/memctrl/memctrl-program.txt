@@ -1,0 +1,159 @@
+
+#
+#                       The code for the memctrl program.
+#
+#
+# ============================================================================
+#
+#                               Program Ports
+#
+
+port input  uart_interrupt
+port input  uart_rdata      [7:0]
+port output uart_rcen       [7:0]
+port input  uart_rack
+port output uart_wdata      [7:0]
+port output uart_wcen       [7:0]
+port input  uart_wack
+
+# ============================================================================
+#
+#                           Program State Variables
+#
+
+state   scratch_0
+state   scratch_1
+state   scratch_2
+state   scratch_3
+state   uart_data           [7:0]
+state   mem_data            [7:0]
+state   op_counter          [7:0]
+state   addr_pointer        [31:0]
+
+
+# ============================================================================
+#
+# Execution starts here. Setup the outputs of the core and then jump into
+# The idle loop.
+#
+block main
+
+    set uart_rcen  4'b0
+    set uart_wcen  4'b0
+    set uart_wdata 8'b0
+
+    goto idle_loop
+
+
+# ----------------------------------------------------------------------------
+#
+# Wait in this block for an interrupt from the UART module.
+#
+block idle_loop
+    
+    ifnez   uart_interrupt  read_uart_cmd
+    goto    idle_loop
+
+
+# ----------------------------------------------------------------------------
+#
+# Read the recieved data from the UART module.
+#
+block read_uart_cmd
+    
+    setifel uart_rcen       uart_rack       4'b0000     4'b0001
+    cpy     uart_data       uart_rdata
+    ifnez   uart_rack       decode_uart_cmd
+    goto    read_uart_cmd
+
+
+# ----------------------------------------------------------------------------
+#
+# Based on the command, branch to one of the procedures. If it is not a
+# valid command, jump back to the idle loop and ignore it.
+# 
+#       Command |   Action
+#       --------|------------------------
+#       8'h00   | NOP - Do nothing
+#       8'h01   | Set address pointer
+#       8'h02   | Set counter
+#       8'h04   | Start memory write sequence
+#       8'h08   | Start memory read sequence
+#
+block decode_uart_cmd
+    msk     scratch_0       uart_data   8'h01
+    msk     scratch_1       uart_data   8'h02
+    msk     scratch_2       uart_data   8'h04
+    msk     scratch_3       uart_data   8'h08
+
+    block call_cmd
+
+        ifnez   scratch_0       proc_set_addr_pointer
+        ifnez   scratch_1       proc_set_counter
+        ifnez   scratch_2       proc_uart_to_mem
+        ifnez   scratch_3       proc_mem_to_uart
+        goto    idle_loop
+
+# ============================================================================
+#
+# Procedure for setting the value of the byte address pointer.
+#
+#   The address is 32-bits wide, so we wait for the next four bytes to be
+#   recieved and shift in the address into the pointer register. We
+#   expect the MS byte first, and for the address to be in little endian.
+#
+block proc_set_addr_pointer
+    
+    block get_ap_byte_3
+        setifel uart_rcen       uart_rack       4'b0000     4'b0001
+        setbyte addr_pointer    3               uart_rdata
+        ifnez   uart_rack       get_ap_byte_3
+    
+    block get_ap_byte_2
+        setifel uart_rcen       uart_rack       4'b0000     4'b0001
+        setbyte addr_pointer    2               uart_rdata
+        ifnez   uart_rack       get_ap_byte_2
+    
+    block get_ap_byte_1
+        setifel uart_rcen       uart_rack       4'b0000     4'b0001
+        setbyte addr_pointer    1               uart_rdata
+        ifnez   uart_rack       get_ap_byte_1
+    
+    block get_ap_byte_0
+        setifel uart_rcen       uart_rack       4'b0000     4'b0001
+        setbyte addr_pointer    0               uart_rdata
+        ifnez   uart_rack       get_ap_byte_0
+
+    goto main
+
+# ============================================================================
+#
+# Procedure for setting the operation counter variable.
+# Wait for the next byte to be recieved and set the counter to that value.
+#
+block proc_set_counter
+    
+    setifel uart_rcen       uart_rack       4'b0000     4'b0001
+    cpy     op_counter      uart_rdata
+    ifnez   uart_rack       proc_set_counter
+    goto    idle_loop
+
+
+# ============================================================================
+#
+# Procedure for transfering data from the UART port and into system memory.
+#
+block proc_uart_to_mem
+
+    goto main
+
+
+# ============================================================================
+#
+# Procedure for transfering data from system memory and into UART.
+#
+block proc_mem_to_uart
+
+    goto main
+
+

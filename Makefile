@@ -11,6 +11,12 @@ CC = ./compile.py
 VCC= iverilog
 VVP= vvp
 
+CC_FLAGS=
+
+ifdef DEBUG
+    CC_FLAGS = --debug-states
+endif
+
 all: $(SIM_FILE) $(VERILOG_SRC)
 
 dirs:
@@ -22,7 +28,8 @@ dirs:
 %.v : ${SRC_INSTRS} ${SRC_PROGRAM} dirs
 	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
         --output $@ \
-        --gendocs --instrdocs work/doc-instrs.html
+        --gendocs --instrdocs work/doc-instrs.html \
+        $(CC_FLAGS)
 
 #
 # Target to convert verilog files into icarus verilog simulation exes

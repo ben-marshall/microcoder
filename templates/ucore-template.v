@@ -120,6 +120,7 @@ always @(*) begin : _select_next_state_
     _next_state_ = {{program.get_block_state_name(program.blocks_by_name["main"])}};
 
     case (_current_state_)
+
 {%- for block in program.blocks %}
 
         // 

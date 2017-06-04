@@ -20,6 +20,8 @@ def parseArguments():
     parser.add_argument("--instrdocs", 
                         help="Instruction documentation output file path",
                         default = "doc-instrs.html")
+    parser.add_argument("--debug-states", help="Display the current state each\
+    simulation cycle.",action="store_true")
 
     args = parser.parse_args()
     return args
@@ -52,6 +54,7 @@ def main():
     print("> Rendering template to %s" % args.output)
 
     renderer = ucode.UCTemplater(resolver)
+    renderer.debug_states = args.debug_states
     renderer.renderTo(args.output)
 
     if(args.gendocs):

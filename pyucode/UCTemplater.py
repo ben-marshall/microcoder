@@ -21,6 +21,7 @@ class UCTemplater(object):
         Create a new template renderer.
         """
         self.prog = resolved_program
+        self.debug_states = False
 
     def renderTo(self, output_path):
         """
@@ -37,7 +38,8 @@ class UCTemplater(object):
                     variables = self.prog.variables,
                     ports     = self.prog.ports,
                     instrs    = self.prog.instrs,
-                    program   = self.prog.program
+                    program   = self.prog.program,
+                    debug_states = self.debug_states
                 )
             )
 

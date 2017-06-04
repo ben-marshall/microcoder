@@ -203,7 +203,7 @@ block proc_uart_to_mem
     block   u2m_write_to_mem
         setifel mem_cen         mem_ack         1'b0        1'b1
         setifel mem_wen         mem_ack         1'b0        1'b1
-        ifnez   mem_ack         u2m_write_to_mem
+        ifeqz   mem_ack         u2m_write_to_mem
         goto    u2m_adjust_pointers
 
     block   u2m_adjust_pointers

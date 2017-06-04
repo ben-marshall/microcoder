@@ -221,7 +221,6 @@ block proc_uart_to_mem
 block proc_mem_to_uart
 
     ifeqz   op_counter      idle_loop
-    ifeqz   uart_interrupt  proc_mem_to_uart
     goto    m2u_get_uart_status
 
     block   m2u_get_uart_status

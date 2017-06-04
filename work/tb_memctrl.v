@@ -21,7 +21,7 @@ module tb_out ();
 
     always @(posedge clk) begin
         clock_counter = clock_counter + 1;
-        if(clock_counter > 10000) begin
+        if(clock_counter > 2000) begin
             $finish;
         end
     end
@@ -102,7 +102,7 @@ module tb_out ();
                 mem_ack = 0;
                 if(mem_cen) begin
                     if(mem_wen) begin
-                        model_memory[mem_addr[9:0]] = mem_rdata;
+                        model_memory[mem_addr[9:0]] = mem_wdata;
                         mem_ack = 1;
                     end else begin
                         mem_rdata   = model_memory[mem_addr[9:0]];
@@ -138,6 +138,12 @@ module tb_out ();
         
         send_uart_cmd(8'h00);   // NOP       
         send_uart_cmd(8'h04);   // Start write to mem sequence.
+        repeat(15) begin
+            send_uart_cmd($random);
+        end
+
+        send_uart_cmd(8'h00);   // NOP       
+        send_uart_cmd(8'h00);   // NOP       
         
         send_uart_cmd(8'h01);   // Set Address
         send_uart_cmd(8'hA0);   // Set Address b3
@@ -154,9 +160,8 @@ module tb_out ();
         send_uart_cmd(8'h00);   // NOP       
         send_uart_cmd(8'h08);   // Start read from mem sequence
         
-        repeat(15) begin
-            send_uart_cmd($random);
-        end
+        send_uart_cmd(8'h00);   // NOP       
+        send_uart_cmd(8'h00);   // NOP       
 
     end endtask
 

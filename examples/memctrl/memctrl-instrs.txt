@@ -28,9 +28,12 @@ end
 define setbyte
     argument variable var   
     argument constant n   
-    argument constant byte_val
+    argument variable byte_val
 begin
-    var = var &  ~( 32'hFF << n * 8 ) | ( byte_val << n * 8 )
+    var [31:24] = ( n == 3 ) ? byte_val : var [31:24]
+    var [23:16] = ( n == 2 ) ? byte_val : var [23:16]
+    var [15:8]  = ( n == 1 ) ? byte_val : var [15:8] 
+    var [7:0]   = ( n == 0 ) ? byte_val : var [7:0]  
 end
 
 // ---------------------------------------------------------------------------

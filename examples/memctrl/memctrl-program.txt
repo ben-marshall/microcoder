@@ -9,19 +9,26 @@
 #
 
 port input  uart_interrupt
-port input  uart_rdata      [7:0]
-port output uart_rcen       [3:0]
-port input  uart_rack
-port output uart_wdata      [7:0]
-port output uart_wcen       [3:0]
-port input  uart_wack
-
-port output mem_cen         
-port output mem_wen
-port input  mem_ack
-port output mem_addr        [31:0]
-port output mem_wdata       [7:0]
-port input  mem_rdata       [7:0]
+  
+port input  s_axi_aclk
+port input  s_axi_aresetn
+port output s_axi_awaddr    [31:0]
+port output s_axi_awvalid
+port input  s_axi_awready
+port output s_axi_wdata     [31:0]
+port output s_axi_wstrb     [3:0]
+port output s_axi_wvalid
+port input  s_axi_wready
+port input  s_axi_bresp     [1:0]
+port input  s_axi_bvalid
+port output s_axi_bready
+port output s_axi_araddr    [3:0]
+port output s_axi_arvalid
+port input  s_axi_arready
+port input  s_axi_rdata     [31:0]
+port input  s_axi_rresp     [1:0]
+port input  s_axi_rvalid
+port output s_axi_rready
 
 # ============================================================================
 #
@@ -43,13 +50,17 @@ state   op_counter          [7:0]
 #
 block main
 
-    set uart_rcen   4'b0
-    set uart_wcen   4'b0
-    set uart_wdata  8'b0
+    set     s_axi_awaddr    0
+    set     s_axi_awvalid   0
+    set     s_axi_wdata     0
+    set     s_axi_wstrb     0
+    set     s_axi_wvalid    0
+    set     s_axi_bready    0
+    set     s_axi_araddr    0
+    set     s_axi_arvalid   0
+    set     s_axi_rready    0
 
-    set mem_cen     1'b0
-
-    goto configure_uart
+    goto    configure_uart
 
 
 # ----------------------------------------------------------------------------
@@ -58,9 +69,6 @@ block main
 #
 block configure_uart
 
-    set     uart_wdata      8'b0001_0011
-    setifel uart_wcen       uart_wack       4'b0000     4'b1000
-    ifnez   uart_rack       configure_uart
     goto idle_loop
 
 
@@ -70,10 +78,6 @@ block configure_uart
 #
 block idle_loop
     
-    set     uart_rcen       4'b0
-    set     uart_wcen       4'b0
-
-    ifnez   uart_interrupt  read_uart_cmd
     goto    idle_loop
 
 
@@ -83,9 +87,6 @@ block idle_loop
 #
 block read_uart_cmd
     
-    setifel uart_rcen       uart_rack       4'b0000     4'b0001
-    cpy     tmp_data        uart_rdata
-    ifnez   uart_rack       decode_uart_cmd
     goto    read_uart_cmd
 
 
@@ -125,45 +126,9 @@ block decode_uart_cmd
 #   expect the MS byte first, and for the address to be in little endian.
 #
 block proc_set_addr_pointer
-    ifeqz   uart_interrupt  proc_set_addr_pointer
-    goto    get_ap_byte_3
-    
-    block get_ap_byte_3
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        setbyte mem_addr        3               uart_rdata
-        ifeqz   uart_rack       get_ap_byte_3
-        goto    wait_for_next_interrupt_ap_1
-    
-    block wait_for_next_interrupt_ap_1
-        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_1
-        goto    get_ap_byte_2
-    
-    block get_ap_byte_2
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        setbyte mem_addr        2               uart_rdata
-        ifeqz   uart_rack       get_ap_byte_2
-        goto    wait_for_next_interrupt_ap_2
-    
-    block wait_for_next_interrupt_ap_2
-        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_2
-        goto    get_ap_byte_1
-    
-    block get_ap_byte_1
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        setbyte mem_addr        1               uart_rdata
-        ifeqz   uart_rack       get_ap_byte_1
-        goto    wait_for_next_interrupt_ap_3
-    
-    block wait_for_next_interrupt_ap_3
-        ifeqz   uart_interrupt  wait_for_next_interrupt_ap_3
-        goto    get_ap_byte_0
-    
-    block get_ap_byte_0
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        setbyte mem_addr        0               uart_rdata
-        ifeqz   uart_rack       get_ap_byte_0
 
-    goto idle_loop
+    goto    idle_loop
+
 
 # ============================================================================
 #
@@ -172,16 +137,7 @@ block proc_set_addr_pointer
 #
 block proc_set_counter
 
-    block wait_for_next_interrupt
-        ifeqz   uart_interrupt  wait_for_next_interrupt
-        goto    get_counter_value
-
-    block get_counter_value
-    
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        cpy     op_counter      uart_rdata
-        ifeqz   uart_rack       get_counter_value
-        goto    idle_loop
+    goto    idle_loop
 
 
 # ============================================================================
@@ -190,28 +146,7 @@ block proc_set_counter
 #
 block proc_uart_to_mem
 
-    ifeqz   op_counter      idle_loop
-    ifeqz   uart_interrupt  proc_uart_to_mem
-    goto    u2m_get_uart_data
-
-    block   u2m_get_uart_data
-        setifel uart_rcen       uart_rack       4'b0000     4'b0001
-        cpy     mem_wdata       uart_rdata
-        ifeqz   uart_rack       u2m_get_uart_data
-        goto    u2m_write_to_mem
-    
-    block   u2m_write_to_mem
-        setifel mem_cen         mem_ack         1'b0        1'b1
-        setifel mem_wen         mem_ack         1'b0        1'b1
-        ifeqz   mem_ack         u2m_write_to_mem
-        goto    u2m_adjust_pointers
-
-    block   u2m_adjust_pointers
-
-        dec op_counter      1
-        inc mem_addr        1
-
-    goto proc_uart_to_mem
+    goto    idle_loop
 
 
 # ============================================================================
@@ -220,41 +155,6 @@ block proc_uart_to_mem
 #
 block proc_mem_to_uart
 
-    ifeqz   op_counter      idle_loop
-    goto    m2u_get_uart_status
-
-    block   m2u_get_uart_status
-        setifel uart_rcen       uart_rack       4'b0000     4'b1000
-        cpy     tmp_data        uart_rdata
-        ifnez   uart_rack       m2u_get_uart_status
-        goto    m2u_mask_uart_status
-    
-    block   m2u_mask_uart_status
-        msk     scratch_0       tmp_data        8'b00001000
-        goto    m2u_check_tx_not_full
-    
-    block   m2u_check_tx_not_full
-        ifnez   scratch_0       m2u_get_uart_status
-        goto    m2u_get_mem_data
-    
-    block   m2u_get_mem_data
-        setifel mem_cen         mem_ack         1'b0        1'b1
-        set     mem_wen         1'b0
-        cpy     tmp_data        mem_rdata
-        ifeqz   mem_ack         m2u_get_mem_data
-        goto    m2u_write_to_uart
-    
-    block   m2u_write_to_uart
-        setifel uart_wcen       uart_wack       4'b0000     4'b0010
-        cpy     uart_wdata      tmp_data
-        ifeqz   uart_wack       m2u_write_to_uart
-        goto    m2u_adjust_pointers
-
-    block   m2u_adjust_pointers
-
-        dec op_counter      1
-        inc mem_addr        1
-
-    goto proc_mem_to_uart
+    goto    idle_loop
 
 

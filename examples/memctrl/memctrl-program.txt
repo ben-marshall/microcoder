@@ -240,11 +240,13 @@ block proc_mem_to_uart
     block   m2u_get_mem_data
         setifel mem_cen         mem_ack         1'b0        1'b1
         set     mem_wen         1'b0
+        cpy     tmp_data        mem_rdata
         ifeqz   mem_ack         m2u_get_mem_data
         goto    m2u_write_to_uart
     
     block   m2u_write_to_uart
         setifel uart_wcen       uart_wack       4'b0000     4'b0010
+        cpy     uart_wdata      tmp_data
         ifeqz   uart_wack       m2u_write_to_uart
         goto    m2u_adjust_pointers
 

@@ -29,7 +29,8 @@ class UCProgramFlowChange(object):
         self.target         = None
         self.conditional    = False
         self.variable       = None
-        self.parse()
+        if(src != None):
+            self.parse()
 
     def parse(self):
         """
@@ -72,6 +73,54 @@ class UCProgramBlock(object):
         self.statements = statements
         self.flow_change = flow_change
         self.index = None
+
+    def is_atomic(self):
+        """
+        Return True if there are zero or one statements in this program block,
+        otherwise return False
+        """
+        return len(self.statements) <= 1
+
+    def atomised(self):
+        """
+        Returns a list of new program blocks, where each block contains
+        at most a single statement. The name of the first block is the same
+        as this block, and the final block uses the same flow control
+        decision logic as this block.
+        All newly created blocks use goto statements to the 'next' block.
+        """
+
+        tr = []
+        namecounter = 0
+        
+        for statement in self.statements:
+            
+            # Keep the same block name if this is the first statement,
+            # otherwise number it accordingly.
+            newblock_name = self.name
+            if(not statement is self.statements[0]):
+                newblock_name = "%s_%d" % (self.name, namecounter)
+            
+            # Create a new 'goto' statement for the flowchange if this is a
+            # new intermediate block, otherwise re-use the current flow
+            # change object.
+            newblock_flowchange = None
+            if(statement is self.statements[-1]):
+                newblock_flowchange = self.flow_change
+            else:
+                newfc_src = "goto %s_%d" % (self.name, namecounter+1)
+                newblock_flowchange = [UCProgramFlowChange(newfc_src)]
+
+            newblock     = UCProgramBlock(newblock_name, 
+                                          [statement],
+                                          newblock_flowchange)
+            tr.append(newblock)
+            namecounter += 1
+
+        print("Atomised block '%s' into %d sub-blocks" % 
+            (self.name, len(tr)))
+
+        return tr
 
 
 
@@ -192,18 +241,28 @@ class UCProgram(object):
             return None
 
 
-    def addProgramBlock(self, block):
+    def addProgramBlock(self, new_block):
         """
         Add a new basic block to the program.
         """
-        assert type(block) is UCProgramBlock, "block should be of type UCProgramBlock"
-        if not block.name in self.blocks_by_name:
-            block.index = self.block_count
-            self.blocks.append(block)
-            self.blocks_by_name[block.name]=block
-            self.block_count = self.block_count + 1
+        assert type(new_block) is UCProgramBlock, "block should be of type UCProgramBlock"
+
+        blocks_to_add = []
+
+
+        if(new_block.is_atomic()):
+            blocks_to_add = [new_block]
         else:
-            log.error("The block with name '%s' has already been declared"% block.name)
+            blocks_to_add = new_block.atomised()
+
+        for block in blocks_to_add:
+            if not block.name in self.blocks_by_name:
+                block.index = self.block_count
+                self.blocks.append(block)
+                self.blocks_by_name[block.name]=block
+                self.block_count = self.block_count + 1
+            else:
+                log.error("The block with name '%s' has already been declared"% block.name)
 
 
     def addPort(self, lineNo,tokens):

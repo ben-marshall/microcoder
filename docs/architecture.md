@@ -39,9 +39,14 @@ Execution will always start in the `main` state and continue from there.
 
 ## Program blocks
 
-- Each program block is implemented as a series of sequential statements.
+- Each program block is implemented as a series of sequential states, with a
+  single instruction executing per block [^1]
   These statements are the expansion of all instructions within a basic block.
 - At the end of the block, the *next* block is computed based on the control
   flow statements at the end of the block.
-- Blocks with no explicit control flow statement simply carry on to the next
-  block in the program sequence.
+- Blocks with no explicit control flow statement will cause the program to
+  return to the `main` start block.
+
+---
+
+[^1] This will change in future if optimisation is allowed.

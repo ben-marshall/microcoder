@@ -7,6 +7,7 @@ port output result   [63:0] # The result of calculating the n'th number.
 state   counter      [7:0]
 state   num_a        [63:0]
 state   num_b        [63:0]
+state   tmp_a        [63:0]
 
 block main
     
@@ -24,8 +25,9 @@ block compute
     goto        compute_loop
 
 block compute_loop
+    copy        tmp_a   num_a
     add_vars    num_a   num_a   num_b
-    copy        num_b   num_a
+    copy        num_b   tmp_a
     dec         counter 1
     goto        continue
 
@@ -34,7 +36,7 @@ block continue
     goto        finished
 
 block finished
-    set         done    1
     copy        result  num_a
+    set         done    1
     ifeqz       valid   finished
     goto        main

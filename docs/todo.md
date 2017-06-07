@@ -10,7 +10,7 @@
 
 - [ ] Detect multiple writes to the same variable in a single state.
 - [ ] Detect reading from and writing to the same variable in a single state.
-- [ ] Infrastructure to break up blocks into sequences of atomic operations.
+- [X] Infrastructure to break up blocks into sequences of atomic operations.
 
 ### Optimisation
 

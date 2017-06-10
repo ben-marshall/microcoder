@@ -78,6 +78,7 @@ block configure_uart
 #
 block idle_loop
     
+    ifnez   uart_interrupt  read_uart_cmd
     goto    idle_loop
 
 
@@ -86,8 +87,16 @@ block idle_loop
 # Read the recieved data from the UART module.
 #
 block read_uart_cmd
-    
-    goto    read_uart_cmd
+    set     s_axi_araddr    32'hFAB0_0000
+    setifel s_axi_arvalid   s_axi_arready   1'b0    1'b1
+    ifeqz   s_axi_arready   read_uart_cmd
+    ifnez   s_axi_arready   read_uart_cmd_rsp
+
+block read_uart_cmd_rsp
+    cpy_b0  tmp_data       s_axi_rdata
+    set     s_axi_rready   s_axi_rvalid
+    ifeqz   s_axi_rvalid   read_uart_cmd_rsp
+    ifnez   s_axi_rvalid   decode_uart_cmd
 
 
 # ----------------------------------------------------------------------------

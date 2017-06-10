@@ -78,6 +78,18 @@ end
 
 // ---------------------------------------------------------------------------
 //
+// Copy the lowest byte of one variable into the lowest byte of another.
+//
+define cpy_b0
+    argument variable dest
+    argument variable source
+begin
+    dest [7:0] = source [7:0]
+end
+
+
+// ---------------------------------------------------------------------------
+//
 // Decrement a variable by a constant amount.
 //
 define dec

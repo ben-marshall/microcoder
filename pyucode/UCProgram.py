@@ -105,6 +105,10 @@ class UCProgramBlock(object):
             rs, ws      = statement.read_write_sets()
             read_set    = read_set.union(rs)
             write_set   = write_set.union(ws)
+        
+        for fc in self.flow_change:
+            if(fc.conditional):
+                read_set.add(fc.variable)
 
         return (read_set, write_set)
 

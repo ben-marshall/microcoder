@@ -14,6 +14,6 @@
 
 ### Optimisation
 
-- [ ] Infrastructure to coalesce atomised blocks based on tunable parameters.
+- [X] Infrastructure to coalesce atomised blocks based on tunable parameters.
 - [ ] Be able to specify a *cost* for each operator, and coalesce blocks until
       they contain the maximum allowable *cost* per block (per cycle)

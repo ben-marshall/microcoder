@@ -34,9 +34,10 @@ via pip.
 Run the tool using the following command:
 
 ```sh
-$> ./counter.py --help
-
+$> python3 compile.py --help
 usage: compile.py [-h] [--output OUTPUT] [--gendocs] [--instrdocs INSTRDOCS]
+                  [--progdocs PROGDOCS] [--debug-states] [--flowgraph]
+                  [--graphpath GRAPHPATH] [--opt-coalesce]
                   instructions program
 
 positional arguments:
@@ -50,7 +51,12 @@ optional arguments:
   --gendocs, -D         Generate documentation
   --instrdocs INSTRDOCS
                         Instruction documentation output file path
-$> _
+  --progdocs PROGDOCS   Program documentation output file path
+  --debug-states        Display the current state each simulation cycle.
+  --flowgraph           Emit a graph of program control flow changes.
+  --graphpath GRAPHPATH
+                        Path of file created when --flowgraph is set.
+  --opt-coalesce        Enable coalecsing of blocks to improve performance.
 ```
 
 The key arguments are `instructions` and `program` which define the source

@@ -38,6 +38,7 @@ dirs:
 	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
         --output $@ \
         --gendocs --instrdocs work/doc-instrs.html \
+        --progdocs work/doc-program.html \
         $(CC_FLAGS)
 
 #

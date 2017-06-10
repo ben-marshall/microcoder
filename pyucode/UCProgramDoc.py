@@ -41,3 +41,19 @@ class UCProgramDocgen(object):
                 )
             )
 
+    def gen_program_docs(self, filepath):
+        """
+        Generates a small HTML page documenting the program.
+        """
+        
+        env      = Environment(loader=FileSystemLoader("./templates/"))
+        template = env.get_template("prog-docs.html")
+
+        with open(filepath,"w") as fh:
+            fh.write(
+                template.render(
+                    program   = self.prog.program,
+                    pagetitle = "Program Documentation"
+                )
+            )
+

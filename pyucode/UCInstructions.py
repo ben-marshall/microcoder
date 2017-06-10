@@ -108,12 +108,12 @@ class UCInstruction(object):
                     continue
 
                 if(eq_seen and self.is_argument(t)):
-                    
-                    readset.append(self.resolved_args[t])
+                    if(not self.get_argument(t).constant):
+                        readset.append(self.resolved_args[t])
 
                 elif((not eq_seen) and self.is_argument(t)):
-                    
-                    writeset.append(self.resolved_args[t])
+                    if(not self.get_argument(t).constant):
+                        writeset.append(self.resolved_args[t])
 
         return (readset,writeset)
 

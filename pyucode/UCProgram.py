@@ -176,13 +176,14 @@ class UCProgram(object):
         """
         return "STATE_%s" % block.name.upper()
     
-    def synth_block_statements(self,block):
+    def synth_block_statements(self,block, annotate=True):
         """
         Return a synthesised set of statements within the program block.
         """
         tr = []
         for instruction in block.statements:
-            tr.append("// Instruction: %s" % instruction.name)
+            if(annotate):
+                tr.append("// Instruction: %s" % instruction.name)
 
             instr_statements = instruction.synth_statements()
             tr += instr_statements

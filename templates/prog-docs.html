@@ -40,6 +40,8 @@ h1,h2,h3{line-height:1.2}
 <body>
 <h1>Program Documentation</h1>
 
+Total States: {{ program.blocks | length}}<br/>
+
 <hr/>
 {% for block in program.blocks %}
 
@@ -63,7 +65,8 @@ h1,h2,h3{line-height:1.2}
         {% endfor %}
     </ul>
 </td></tr>
-<tr><td colspan="2">
+<tr><td style="width:50%; vertical-align:top;">
+<b>Source Code:</b>
 <code>
 {% for instr in block.statements %}
     {{instr.name}} {% for arg in instr.arguments %}
@@ -77,6 +80,19 @@ h1,h2,h3{line-height:1.2}
 {% endfor %}
 {% for flowchange in block.flow_change %}
 {{ flowchange.src }} <br/>
+{% endfor %}
+</code>
+</td>
+<td style="width:50%; vertical-align:top;">
+<b>Emitted Verilog:</b>
+<code>
+{% set emitted = program.synth_block_statements(block, annotate=False) %}
+{% set flow    = program.synth_flowchanges(block) %}
+{% for stm in emitted %}
+    {{stm.split("//")[0]}} <br/>
+{% endfor %}
+{% for stm in flow%}
+    {{stm.split("//")[0]}} <br/>
 {% endfor %}
 </code>
 </td></tr></table>

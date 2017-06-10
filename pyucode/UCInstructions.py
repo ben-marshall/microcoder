@@ -62,6 +62,7 @@ class UCInstruction(object):
         self.statements = statements
         self.resolved_args = {}
         self.description = desc
+        self.resolved = False
 
 
     def is_argument(self, token):
@@ -69,6 +70,7 @@ class UCInstruction(object):
         Checks if the supplied token name is an argument to the instruction.
         """
         return token in self.resolved_args
+
 
     def get_argument(self, arg_name):
         """
@@ -79,6 +81,41 @@ class UCInstruction(object):
             if(a.name == arg_name):
                 return a
         return None
+    
+
+    def read_write_sets(self):
+        """
+        Returns the set of variables which are read and written by the
+        instruction instance. 
+        This function cannot be called before the program has been resolved.
+        Each set is returned as a list in a tuple of the form 
+        `(read set, write set)`. The list contains objects of type
+        UCPort or UCProgramVariable
+        """
+        assert (self.resolved) , \
+            "Instructions must be resolved before read set is constructed."
+        
+        readset = []
+        writeset= []
+
+        for statement in self.statements:
+
+            tokens  = statement.get_tokens()
+            eq_seen = False
+            for t in tokens:
+                if(t == "="):
+                    eq_seen = True
+                    continue
+
+                if(eq_seen and self.is_argument(t)):
+                    if(not self.get_argument(t).constant):
+                        readset.append(self.resolved_args[t])
+
+                elif((not eq_seen) and self.is_argument(t)):
+                    if(not self.get_argument(t).constant):
+                        writeset.append(self.resolved_args[t])
+
+        return (readset,writeset)
 
 
     def synth_statements(self):
@@ -96,6 +133,7 @@ class UCInstruction(object):
             eq_seen = False
 
             for t in tokens:
+
                 if(t == "="):
                     eq_seen = True
 

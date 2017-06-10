@@ -107,6 +107,7 @@ class UCResolver(object):
 
         tr               = copy.deepcopy(instr)
         tr.resolved_args = resolved_args
+        tr.resolved      = True
         return tr
 
 
@@ -180,6 +181,18 @@ class UCResolver(object):
                         log.error("Jump target '%s' at the end of block '%s'\
  does not exist." % (jump_target, block.name))
 
+            block.resolved = True
+
+    def check_reads_and_writes(self):
+        """
+        Looks over the program blocks and notifies when we write to a
+        variable more than once in a single block.
+        TODO - implement this!
+        """
+        for block in self.program.blocks:
+
+            reads, writes = block.read_write_sets()
+
 
     def resolve(self):
         """
@@ -196,3 +209,4 @@ class UCResolver(object):
         """
         
         self.resolveInstructions()
+        self.check_reads_and_writes()

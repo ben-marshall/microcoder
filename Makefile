@@ -13,11 +13,20 @@ VVP= vvp
 
 CC_FLAGS=
 
-ifdef DEBUG
-    CC_FLAGS = --debug-states
+GRAPH = work/graph.svg
+
+ifdef DOT
+    CC_FLAGS += --flowgraph --graphpath work/graph.dot
 endif
 
-all: $(SIM_FILE) $(VERILOG_SRC)
+ifdef DEBUG
+    CC_FLAGS += --debug-states
+endif
+
+all: $(SIM_FILE) $(VERILOG_SRC) 
+ifdef DOT
+	$(MAKE) $(GRAPH)
+endif
 
 dirs:
 	mkdir -p ./work
@@ -29,6 +38,7 @@ dirs:
 	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
         --output $@ \
         --gendocs --instrdocs work/doc-instrs.html \
+        --progdocs work/doc-program.html \
         $(CC_FLAGS)
 
 #
@@ -40,3 +50,8 @@ dirs:
 
 run : $(SIM_FILE) $(VERILOG_SRC)
 	$(VVP) $(SIM_FILE)
+
+%.svg : %.dot
+ifdef DOT
+	dot -O -Tsvg $<
+endif

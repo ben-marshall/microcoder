@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{{pagetitle}}</title>
+<style type="text/css">
+body{margin:40px
+auto;line-height:1.4;font-size:16px;color:#444;padding:0
+10px; max-width: 800px;
+font-family: Helvetica Neue,Helvetica,Arial,sans-serif;}
+h1,h2,h3{line-height:1.2}
+    
+    code{
+        background-color: #F0F0F0;
+        color: black;
+        display: block;
+        padding: 2px;
+    }
+    .codepad{
+        padding: 5px;
+        border: 1px solid #777;
+    }
+
+    .instruction_listing{
+        width:20%;
+        height: 100%;
+        margin-right: 10px;
+    }
+    .instruction_list_container{
+        border-left: 2px solid silver;
+        padding-left: 10px;
+        width: 70%;
+    }
+    .instruction_container {
+        border-bottom: 2px solid silver;
+    }
+</style>
+</head>
+
+<body>
+<h1>Program Documentation</h1>
+
+Total States: {{ program.blocks | length}}<br/>
+
+<hr/>
+{% for block in program.blocks %}
+
+{% set read_set, write_set = block.read_write_sets() %}
+
+<div class="program-block">
+<h2>{{block.name}}</h2>
+
+<table style="width:100%;"><tr><td style="width:50%; vertical-align:top;">
+    <b>Variables Read:</b><br/>
+    <ul>
+        {% for v in read_set %}
+           <li>{{v.name}}</li>
+        {% endfor %}
+    </ul>
+</td><td style="width:50%; vertical-align:top;">
+    <b>Variables Written:</b><br/>
+    <ul>
+        {% for v in write_set %}
+           <li>{{v.name}}</li>
+        {% endfor %}
+    </ul>
+</td></tr>
+<tr><td style="width:50%; vertical-align:top;">
+<b>Source Code:</b>
+<code>
+{% for instr in block.statements %}
+    {{instr.name}} {% for arg in instr.arguments %}
+        {% if arg.variable %}
+            {{instr.resolved_args[arg.name].name}}
+        {% else %}
+            {{instr.resolved_args[arg.name]}}
+        {% endif %}
+    {% endfor %}
+    <br/>
+{% endfor %}
+{% for flowchange in block.flow_change %}
+{{ flowchange.src }} <br/>
+{% endfor %}
+</code>
+</td>
+<td style="width:50%; vertical-align:top;">
+<b>Emitted Verilog:</b>
+<code>
+{% set emitted = program.synth_block_statements(block, annotate=False) %}
+{% set flow    = program.synth_flowchanges(block) %}
+{% for stm in emitted %}
+    {{stm.split("//")[0]}} <br/>
+{% endfor %}
+{% for stm in flow%}
+    {{stm.split("//")[0]}} <br/>
+{% endfor %}
+</code>
+</td></tr></table>
+    
+</div><hr/>
+
+{% endfor %}
+
+</body>
+
+</html> 

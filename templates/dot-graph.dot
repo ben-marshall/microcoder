@@ -1,0 +1,14 @@
+
+digraph program_flow {
+
+ {% for block in program.blocks %}
+    {{block.name}}
+ {%- endfor %}
+ 
+ {% for block in program.blocks %}
+     {%- for flowchange in block.flow_change%}
+        {{block.name}} -> {{flowchange.target.name}}
+     {%- endfor %}
+ {%- endfor %}
+
+}

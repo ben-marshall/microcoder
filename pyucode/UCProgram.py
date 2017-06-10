@@ -393,10 +393,6 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
             if(pstate == IGNORE):
 
                 if(tokens[0] == "block"):
-                    l_add_current_block(current_name, 
-                                        current_sub_block,
-                                        current_statements,
-                                        current_flowchange)
                     # start parsing the new block.
                     current_name        = tokens[1]
                     current_statements  = []

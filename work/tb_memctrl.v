@@ -191,20 +191,7 @@ module tb_out ();
     // Instance the design under test.
     ucore_main i_dut(
         .clk           (clk           ),
-        .aresetn       (aresetn       ),
-        .uart_interrupt(uart_interrupt),
-        .uart_rack     (uart_rack     ),
-        .uart_rcen     (uart_rcen     ),
-        .uart_rdata    (uart_rdata    ),
-        .uart_wack     (uart_wack     ),
-        .uart_wcen     (uart_wcen     ),
-        .uart_wdata    (uart_wdata    ),
-        .mem_cen       (mem_cen       ),
-        .mem_wen       (mem_wen       ),
-        .mem_ack       (mem_ack       ),
-        .mem_addr      (mem_addr      ),
-        .mem_wdata     (mem_wdata     ),
-        .mem_rdata     (mem_rdata     )
+        .aresetn       (aresetn       )
     );
 
 endmodule

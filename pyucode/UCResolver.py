@@ -4,6 +4,7 @@ Classes and functions for resolving the various components of a program into
 proper objects.
 """
 
+import sys
 import copy
 import logging as log
 
@@ -201,10 +202,10 @@ class UCResolver(object):
         jump into it.
         """
         tr = []
-        for block in self.program.blocks:
-            for flowchange in block.flow_change:
-                if flowchange.target == block:
-                    tr.append(block)
+        for b in self.program.blocks:
+            for flowchange in b.flow_change:
+                if flowchange.target== block:
+                    tr.append(b)
         return tr
 
     def outgoing_blocks (self,block):
@@ -263,10 +264,13 @@ class UCResolver(object):
         for i in range(0,len(self.program.blocks)):
             block = self.program.blocks[i]
 
+            print("C: %s" % block.name)
+
             inset   = self.incoming_blocks(block)
             outset  = self.outgoing_blocks(block)
             
             if(len(inset) + len(outset) == 0):
+                block.removable = True
                 continue
             
             # Reads and writes for the parent block.
@@ -279,13 +283,10 @@ class UCResolver(object):
 
                 # Reads and writes for the candidate merge block
                 crd, cwr = candidate.read_write_sets()
-                
+
                 # If multiple things target this block, we cannot merge it
                 # safely.
                 if(len(cin) > 1): continue
-
-                # Skip if this block has only one incident and exit state.
-                if(len(cin) == 1 and len(cout) == 1): continue
 
                 # Avoid read after write hazards.
                 if(not crd.isdisjoint(writes)): continue

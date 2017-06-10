@@ -280,8 +280,14 @@ class UCResolver(object):
                 # Reads and writes for the candidate merge block
                 crd, cwr = candidate.read_write_sets()
                 
+                # If multiple things target this block, we cannot merge it
+                # safely.
                 if(len(cin) > 1): continue
+
+                # Skip if this block has only one incident and exit state.
                 if(len(cin) == 1 and len(cout) == 1): continue
+
+                # Avoid read after write hazards.
                 if(not crd.isdisjoint(writes)): continue
                 if(not cwr.isdisjoint(writes)): continue
                 

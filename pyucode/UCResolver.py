@@ -194,6 +194,106 @@ class UCResolver(object):
             reads, writes = block.read_write_sets()
 
 
+    def incoming_blocks(self,block):
+        """
+        Given an instance of a block, return a list of blocks which might
+        jump into it.
+        """
+        tr = []
+        for block in self.program.blocks:
+            for flowchange in block.flow_change:
+                if flowchange.target == block:
+                    tr.append(block)
+        return tr
+
+    def outgoing_blocks (self,block):
+        """
+        Given an instance of a block, return a list of blocks which
+        it could jump to.
+        """
+        tr = []
+        for flowchange in block.flow_change:
+            tr.append(flowchange.target)
+        return tr
+
+    def remove_unreachable_blocks(self):
+        """
+        Removes all unreachable blocks from the program
+        """
+        newlist = []
+        for block in self.program.blocks:
+            
+            inset   = self.incoming_blocks(block)
+            outset  = self.outgoing_blocks(block)
+
+            if(len(inset) + len(outset) == 0 or block.removable):
+                print("Removing un-reachable block: '%s'" % block.name)
+            else:
+                newlist.append(block)
+        self.program.blocks = newlist
+
+
+    def coalesce_blocks(self, parent, child):
+        """
+        Merge two blocks together.
+        """
+
+        print("O: Merging block %s into %s" % (child.name,parent.name))
+
+        parent.statements += child.statements
+        parent.flow_change = child.flow_change
+
+        for block in self.program.blocks:
+            for fc in block.flow_change:
+                if(fc.target == child):
+                    fc.target = parent
+
+        return parent
+
+
+    def coalesce_program(self):
+        """
+        Modifys the program by coalescing blocks which appear in sequence
+        and which are orthogonal into a single block.
+        """
+
+        changes = 0
+
+        for i in range(0,len(self.program.blocks)):
+            block = self.program.blocks[i]
+
+            print("-- %s" % block.name)
+
+            inset   = self.incoming_blocks(block)
+            outset  = self.outgoing_blocks(block)
+            
+            if(len(inset) + len(outset) == 0):
+                continue
+
+            writes,reads = block.read_write_sets()
+
+            if(len(outset) == 1):
+                candidate = outset[0]
+                cin      = self.incoming_blocks(candidate)
+                cout     = self.outgoing_blocks(candidate)
+                cwr, crd = candidate.read_write_sets()
+                
+                if(len(cin) > 1): continue
+                if(not crd.isdisjoint(writes)): continue
+                if(not cwr.isdisjoint(writes)): continue
+                
+                self.program.blocks[i] = self.coalesce_blocks(block,candidate)
+                candidate.removable = True
+                changes += 1
+                break
+
+        if(changes > 0):
+            self.remove_unreachable_blocks()
+            changes = self.coalesce_program()
+
+        return changes
+
+
     def resolve(self):
         """
         Call this function once all of the various program sources have been
@@ -210,3 +310,7 @@ class UCResolver(object):
         
         self.resolveInstructions()
         self.check_reads_and_writes()
+        print(">> %d" % len(self.program.blocks))
+        self.coalesce_program()
+        self.remove_unreachable_blocks()
+        print(">> %d" % len(self.program.blocks))

@@ -75,7 +75,7 @@ class UCProgramBlock(object):
         self.flow_change    = flow_change
         self.index          = None
         self.resolved       = False
-
+        self.removable      = False
 
     def is_atomic(self):
         """
@@ -97,14 +97,14 @@ class UCProgramBlock(object):
         assert (self.resolved) , \
             "Blocks must be resolved before read set is constructed."
 
-        read_set    = []
-        write_set   = []
+        read_set    = set([])
+        write_set   = set([])
 
         for statement in self.statements:
             
-            rs, ws      =  statement.read_write_sets()
-            read_set    += rs
-            write_set   += ws
+            rs, ws      = statement.read_write_sets()
+            read_set    = read_set.union(rs)
+            write_set   = write_set.union(ws)
 
         return (read_set, write_set)
 

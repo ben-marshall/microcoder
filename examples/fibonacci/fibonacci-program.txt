@@ -15,14 +15,11 @@ block main
     set         num_a   0
     set         num_b   1
     set         counter 1
+    copy        counter n
 
     ifeqz       valid   main
-    goto        compute
-
-block compute
-
-    copy        counter n
     goto        compute_loop
+
 
 block compute_loop
     copy        tmp_a   num_a

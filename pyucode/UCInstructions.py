@@ -95,8 +95,8 @@ class UCInstruction(object):
         assert (self.resolved) , \
             "Instructions must be resolved before read set is constructed."
         
-        readset = []
-        writeset= []
+        readset = set([])
+        writeset= set([])
 
         for statement in self.statements:
 
@@ -109,11 +109,11 @@ class UCInstruction(object):
 
                 if(eq_seen and self.is_argument(t)):
                     if(not self.get_argument(t).constant):
-                        readset.append(self.resolved_args[t])
+                        readset.add(self.resolved_args[t])
 
                 elif((not eq_seen) and self.is_argument(t)):
                     if(not self.get_argument(t).constant):
-                        writeset.append(self.resolved_args[t])
+                        writeset.add(self.resolved_args[t])
 
         return (readset,writeset)
 

@@ -49,6 +49,7 @@ module tb_out ();
 
     integer i;
     initial begin
+        valid=0;
         i = 1;  
         while(i < 2**8-1) begin
             try_n(i);

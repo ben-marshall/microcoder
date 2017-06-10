@@ -29,6 +29,9 @@ def parseArguments():
     flow changes.",action="store_true")
     parser.add_argument("--graphpath", help="Path of file created when \
     --flowgraph is set.",default="flow.dot")
+    parser.add_argument("--opt-coalesce",
+        help="Enable coalecsing of blocks to improve performance.",
+        action="store_true")
 
     args = parser.parse_args()
     return args
@@ -55,7 +58,7 @@ def main():
     resolver.addVariables(program.variables)
     resolver.addInstructions(instrs)
     resolver.addProgram(program)
-
+    resolver.enable_coalescing = args.opt_coalesce
     resolver.resolve()
     
     print("> Rendering template to %s" % args.output)

@@ -35,6 +35,7 @@ class UCResolver(object):
         self.ports      = UCPortCollection()
         self.instrs     = UCInstructionCollection()
         self.program    = UCProgram()
+        self.enable_coalescing = False
 
     def addVariables(self, variables):
         for v in variables.by_index:
@@ -262,23 +263,25 @@ class UCResolver(object):
         for i in range(0,len(self.program.blocks)):
             block = self.program.blocks[i]
 
-            print("-- %s" % block.name)
-
             inset   = self.incoming_blocks(block)
             outset  = self.outgoing_blocks(block)
             
             if(len(inset) + len(outset) == 0):
                 continue
-
-            writes,reads = block.read_write_sets()
+            
+            # Reads and writes for the parent block.
+            reads,writes = block.read_write_sets()
 
             if(len(outset) == 1):
                 candidate = outset[0]
                 cin      = self.incoming_blocks(candidate)
                 cout     = self.outgoing_blocks(candidate)
-                cwr, crd = candidate.read_write_sets()
+
+                # Reads and writes for the candidate merge block
+                crd, cwr = candidate.read_write_sets()
                 
                 if(len(cin) > 1): continue
+                if(len(cin) == 1 and len(cout) == 1): continue
                 if(not crd.isdisjoint(writes)): continue
                 if(not cwr.isdisjoint(writes)): continue
                 
@@ -310,7 +313,8 @@ class UCResolver(object):
         
         self.resolveInstructions()
         self.check_reads_and_writes()
-        print(">> %d" % len(self.program.blocks))
-        self.coalesce_program()
-        self.remove_unreachable_blocks()
-        print(">> %d" % len(self.program.blocks))
+        if(self.enable_coalescing):
+            print(">> Pre-coalesce state count: %d" % len(self.program.blocks))
+            self.coalesce_program()
+            self.remove_unreachable_blocks()
+            print(">> Post-coalesce state count %d" % len(self.program.blocks))

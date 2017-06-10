@@ -15,6 +15,10 @@ CC_FLAGS=
 
 GRAPH = work/graph.svg
 
+ifdef OPT
+    CC_FLAGS += --opt-coalesce
+endif
+
 ifdef DOT
     CC_FLAGS += --flowgraph --graphpath work/graph.dot
 endif

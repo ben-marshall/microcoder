@@ -107,6 +107,7 @@ class UCResolver(object):
 
         tr               = copy.deepcopy(instr)
         tr.resolved_args = resolved_args
+        tr.resolved      = True
         return tr
 
 
@@ -179,6 +180,8 @@ class UCResolver(object):
                     else:
                         log.error("Jump target '%s' at the end of block '%s'\
  does not exist." % (jump_target, block.name))
+
+            block.resolved = True
 
 
     def resolve(self):

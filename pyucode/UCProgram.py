@@ -69,10 +69,12 @@ class UCProgramBlock(object):
         Create a new program block with the supplied statments and control
         flow change at the end.
         """
-        self.name = name
-        self.statements = statements
-        self.flow_change = flow_change
-        self.index = None
+        self.name           = name
+        self.statements     = statements
+        self.flow_change    = flow_change
+        self.index          = None
+        self.resolved       = False
+
 
     def is_atomic(self):
         """
@@ -80,6 +82,31 @@ class UCProgramBlock(object):
         otherwise return False
         """
         return len(self.statements) <= 1
+
+
+    def read_write_sets(self):
+        """
+        Iterates over all instructions in the block, constructing two sets
+        representing the variables which are read or written inside the
+        block.
+        Each set is returned as a list in a tuple of the form 
+        `(read set, write set)`. The list contains objects of type
+        UCPort or UCProgramVariable
+        """
+        assert (self.resolved) , \
+            "Blocks must be resolved before read set is constructed."
+
+        read_set    = []
+        write_set   = []
+
+        for statement in self.statements:
+            
+            rs, ws      =  statement.read_write_sets()
+            read_set    += rs
+            write_set   += ws
+
+        return (read_set, write_set)
+
 
     def atomised(self):
         """

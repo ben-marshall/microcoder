@@ -22,6 +22,10 @@ def parseArguments():
                         default = "doc-instrs.html")
     parser.add_argument("--debug-states", help="Display the current state each\
     simulation cycle.",action="store_true")
+    parser.add_argument("--flowgraph", help="Emit a graph of program control\
+    flow changes.",action="store_true")
+    parser.add_argument("--graphpath", help="Path of file created when \
+    --flowgraph is set.",default="flow.dot")
 
     args = parser.parse_args()
     return args
@@ -61,7 +65,13 @@ def main():
         print("> Rendering instruction documentation to %s" % args.instrdocs)
         dg = ucode.UCInstructionDocGen(resolver.instrs)
         dg.renderTo(args.instrdocs)
-
+    
+    # Generate per-program documentation
+    progdocs = ucode.UCProgramDocgen(resolver)
+    
+    if(args.flowgraph):
+        print("> Writing flow graph to '%s'" % args.graphpath)
+        progdocs.gen_flow_dot_graph(args.graphpath)
     
     print("> Done")
 

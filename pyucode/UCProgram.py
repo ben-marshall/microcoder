@@ -61,7 +61,8 @@ class UCProgramFlowChange(object):
 
 class UCProgramBlock(object):
     """
-    Represents a block of code defined by the user.
+    Represents a collection of isntruction statements with a control
+    flow statement at the end.
     """
 
     def __init__(self, name, statements, flow_change):

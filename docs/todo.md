@@ -8,8 +8,8 @@
 
 ### Translation
 
-- [ ] Detect multiple writes to the same variable in a single state.
-- [ ] Detect reading from and writing to the same variable in a single state.
+- [X] Detect multiple writes to the same variable in a single state.
+- [X] Detect reading from and writing to the same variable in a single state.
 - [X] Infrastructure to break up blocks into sequences of atomic operations.
 
 ### Optimisation

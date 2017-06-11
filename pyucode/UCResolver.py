@@ -147,17 +147,10 @@ class UCResolver(object):
                     print("Unexpected statement type: %s" % statement_type)
 
             if(len(block.flow_change) == 0):
-                # If a block has no flow changes listed, then add a goto
-                # targeting the next logical block in the program.
-                if(block.index+1 < len(self.program.blocks)):
-                    next_block = self.program.blocks[block.index+1].name
-                    toadd = UCProgramFlowChange("goto %s" % next_block)
-                    block.flow_change.append(toadd)
-                else:
-                    log.warn("The block '%s' is the final block in the program\
-                    and has no defined target block to jump to afterwards.\
-                    This can lead to unpredictable behaviour."%block.name)
-            
+                log.error("The block '%s' has no defined target block to \
+                jump to afterwards. This can lead to unpredictable \
+                behaviour."%block.name)
+
             # Check that the jump (if any) at the end of the block goes
             # to the right place.
             for flow_change in block.flow_change:
@@ -178,6 +171,10 @@ class UCResolver(object):
                         
                         tgt_block = self.program.getBlock(jump_target)
                         flow_change.target = tgt_block
+                    elif(jump_target in self.variables.by_name):
+                        tgt_var   = self.variables.getVariable(jump_target)
+                        flow_change.target      = tgt_var
+                        flow_change.to_variable = True
 
                     else:
                         log.error("Jump target '%s' at the end of block '%s'\

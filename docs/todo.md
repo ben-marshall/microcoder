@@ -1,6 +1,11 @@
 
 # Todo List
 
+### Features
+
+- [X] Make `current_state` value accessible.
+- [X] Call / return using the stack.
+
 ### Parsing
 
 - [ ] Proper parsing of instruction statements, rather than simply expecting

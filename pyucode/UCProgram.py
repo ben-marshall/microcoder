@@ -27,6 +27,7 @@ class UCProgramFlowChange(object):
         self.src=src
         self.change_type    = UCProgramFlowNone
         self.target         = None
+        self.to_variable    = False
         self.conditional    = False
         self.variable       = None
         if(src != None):
@@ -217,7 +218,11 @@ class UCProgram(object):
         tree = []
         for flow_change in block.flow_change:
             
-            target_state = self.get_block_state_name(flow_change.target)
+            target_state = ""
+            if flow_change.to_variable :
+                target_state = flow_change.target.name
+            else:
+                target_state = self.get_block_state_name(flow_change.target)
 
             if(flow_change.conditional):
                 has_compare = True

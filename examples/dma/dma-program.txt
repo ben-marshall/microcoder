@@ -53,7 +53,7 @@ block main
     set     data_wdata      32'b0
     set     data_valid      0
     set     data_w_en       0
-
+    goto    wait_for_command
 
 #
 # Loop inside this block waiting for the valid signals to go on the control
@@ -83,6 +83,7 @@ block   store_inputs
 #
 block dma_loop
     set     ctrl_en         0
+    goto    do_read
 
 block do_read
     mem_rd  src_addr        temp_data

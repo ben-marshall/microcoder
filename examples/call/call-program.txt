@@ -1,0 +1,52 @@
+
+#
+# An example program for setting up blocks which one can call and return
+# from.
+#
+
+
+port output valid
+port input  enable
+port output data       [7:0]
+
+state counter_0        [3:0]
+state counter_1        [7:0]
+
+state ra               [11:0]
+state called
+
+block main
+    set     valid       0
+    set     data        0
+    set     counter_0   16
+    set     counter_1   0
+    
+    goto loop
+
+block loop_top
+    inc     counter_1   1
+    goto    loop
+
+block loop
+    dec     counter_0   1
+    ifnez   counter_0   loop
+    ifeqz   counter_0   call_iface
+
+
+block call_iface
+    set     ra          _current_state_
+    set     called      1
+    ifeqz   called      loop_top
+    ifnez   called      do_iface
+
+
+
+# -------------------------------------------------------------------------
+
+block do_iface
+    copy    data    counter_1
+    setnv   valid   enable
+    set     called  0
+    ifeqz   valid   do_iface
+    ifnez   valid   ra
+

@@ -79,3 +79,22 @@ block finish
 The example program above decrements a counter from 10 to 0 and then "quits"
 by entering an infinite loop.
 
+
+## Special Variables and Call / Return
+
+It is possible to implement call-and-return behaviour with blocks by accessing
+the special variable `_current_state_`. The steps for this are as follows:
+
+1. Declare a state variable at least 12-bits wide to be your *return address*
+pointer.
+2. Declare a 1-bit state variable to indicate a call or return is taking place.
+3. Write your *function* such that when it is finished, it jumps to the value
+inside your *return address* variable using a `goto` or `if*` statement.
+Upon returning it must set the `called` bit to zero.
+4. Any code which wants to call this function can now simply set the *called*
+bit, set the *return address* variable to `_current_state_` and then jump
+to the function.
+
+The caller function **must** jump to the callee if and only if the *called*
+bit is set. If the called bit is not set, this means we have returned to the
+caller state from the callee, and can continue to the next state.

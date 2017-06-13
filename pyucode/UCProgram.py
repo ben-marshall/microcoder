@@ -4,11 +4,14 @@ Functions and classes for parsing and representing complete programs.
 """
 
 import re
+import os
 import sys
 import logging as log
 
 from .UCPorts import UCPort
 from .UCPorts import UCPortCollection
+
+from .UCInstructions import UCInstructionCollection
 
 from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
@@ -174,6 +177,8 @@ class UCProgram(object):
         self.variables  = UCProgramVariableCollection()
         self.ports      = UCPortCollection() 
 
+        # List of parsed instruction files included in this program.
+        self.instructions = UCInstructionCollection()
 
     def get_block_state_name(self,block):
         """
@@ -351,6 +356,32 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
             toadd.width = 1 + (hi - lo)
         self.variables.addProgramVariable(toadd)
 
+    
+    def handleInclude(self,line_no, line_tokens, current_file):
+        """
+        Parses a single 'using' statement line
+        """
+        assert type(line_tokens) == list, "line_tokens should be a list"
+        assert (line_tokens[0] == "using"), "First element of line_tokens should be 'using'"
+
+        if ( len(line_tokens) < 3 ):
+            log.error("Bad 'using' statement on line %d" % line_no)
+            log.error("Should be of the form 'using [instructions|subprogram] 'filepath'")
+        
+        base     = os.path.dirname(current_file)
+        filepath = "".join(line_tokens[2:]).lstrip("'\"").rstrip("'\"")
+        filepath = os.path.join(base,filepath)
+
+        if(line_tokens[1] == "instructions"):
+            log.info("Parsing instructions file: '%s'" % filepath)
+            self.instructions.parse(filepath)
+
+        elif(line_tokens[1] == "subprogram"):
+            log.info("Parsing subprogram file: '%s'" % filepath)
+            self.parseSource(filepath)
+
+        else:
+            log.error("unknown using directive '%s', should be 'instructions' or 'subprogram'" % line_tokens[1])
 
 
     def parseSource(self, filepath):
@@ -365,11 +396,12 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
             lines = [l for l in lines if l != "" and not l.startswith("//")]
             lines = [re.sub(" +"," ",l) for l in lines]
     
-        IGNORE = 1
-        BLOCK  = 2
+        BLOCKS_PORTS= 1
+        USING  = 2
+        BLOCK  = 3
         ERROR  = 0
         
-        pstate = IGNORE
+        pstate = USING
         lno    = 0
 
         current_name        = None
@@ -398,9 +430,22 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
             if(line[0] == "#"):
                 continue
             tokens = line.split(" ")
+                
+            if(pstate == USING):
+                
+                if(tokens[0] == "using"):
+                    self.handleInclude(lno,tokens, filepath)
+                elif(tokens[0] == "port"):
+                    self.addPort(lno, tokens)
+                    pstate = BLOCKS_PORTS
+                elif(tokens[0] == "state"):
+                    self.addProgramVariable(lno, tokens)
+                    pstate = BLOCKS_PORTS
+                else:
+                    pstate = ERROR
 
-            if(pstate == IGNORE):
-
+            elif(pstate == BLOCKS_PORTS):
+                
                 if(tokens[0] == "block"):
                     # start parsing the new block.
                     current_name        = tokens[1]
@@ -446,7 +491,7 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
                     current_statements.append(line)
 
             else:
-                print("Parse error on line %d" % lno + 1)
+                print("Parse error on line %d" % (lno + 1))
                 break
 
         if(current_name != None and

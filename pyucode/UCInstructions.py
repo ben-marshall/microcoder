@@ -171,7 +171,7 @@ class UCInstructionCollection(object):
         """
         self.by_name = {}
         self.by_index = []
-
+        self.filepath   = None
 
     def getInstruction(self, name):
         """
@@ -210,6 +210,8 @@ class UCInstructionCollection(object):
             lines = [l.strip(" \n") for l in lines]
             lines = [l for l in lines if l != ""]
             lines = [re.sub(" +"," ",l) for l in lines]
+
+        self.filepath = filepath
     
         IGNORE=1
         ARGS=3

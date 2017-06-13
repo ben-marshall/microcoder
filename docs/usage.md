@@ -20,7 +20,7 @@ might fit into a design flow.
 - Experimenting with translating high(ish) level serial code into
   synthesisable digital logic.
 
-**Note:** This tool does *zero* optimisation of the input code. If you are
+**Note:** This tool does no real optimisation of the input code. If you are
 planning to synthesise a design, then remember that you will be relying on
 your synthesis tool to optimise any of the control logic, resource sharing and
 register usage.
@@ -34,14 +34,13 @@ via pip.
 Run the tool using the following command:
 
 ```sh
-$> python3 compile.py --help
+$> python3 ./compile.py --help
 usage: compile.py [-h] [--output OUTPUT] [--gendocs] [--instrdocs INSTRDOCS]
                   [--progdocs PROGDOCS] [--debug-states] [--flowgraph]
                   [--graphpath GRAPHPATH] [--opt-coalesce]
-                  instructions program
+                  program
 
 positional arguments:
-  instructions          Instructions definition file
   program               The program to compile.
 
 optional arguments:
@@ -59,9 +58,9 @@ optional arguments:
   --opt-coalesce        Enable coalecsing of blocks to improve performance.
 ```
 
-The key arguments are `instructions` and `program` which define the source
-files containing the instruction definitions and program code / ports
-respectively.
+The key argument is `program` which defines the source
+file containing the top level of your program. Instructions, and other
+sub-modules of the program are included with the `using` statement.
 
 The `--gendocs` switch will make the tool emit a simple HTML page which
 documents any defined instructions it is aware of. This can be useful for

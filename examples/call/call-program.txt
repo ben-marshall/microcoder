@@ -4,6 +4,7 @@
 # from.
 #
 
+using instructions "call-instrs.txt"
 
 port output valid
 port input  enable

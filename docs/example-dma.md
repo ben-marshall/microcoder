@@ -168,6 +168,9 @@ begin
 end
 ```
 
+If you are writing this program out yourself, save this snippet to a file
+named `dma-instrs.txt".
+
 ## Writing the program
 
 To recap, we have defined how our DMA module will interract with the
@@ -178,6 +181,9 @@ Now we can write the program. Below is a very heavily commented version of
 what is in the `examples` folder of the project.
 
 ```
+
+# Make sure we include the instructions for the program.
+using instructions "dma-instrs.txt"
 
 #
 # Program main block - execution starts here.
@@ -273,7 +279,7 @@ easily by running:
 ```sh
 $> make run EXAMPLE=dma
 mkdir -p ./work
-./compile.py examples/dma/dma-instrs.txt examples/dma/dma-program.txt \
+./compile.py examples/dma/dma-program.txt \
 --output work/dma.v \
 --gendocs --instrdocs work/doc-instrs.html
 ---------- uCode Compiler ----------

@@ -1,4 +1,6 @@
 
+using instructions "fibonacci-instrs.txt"
+
 port input  n        [7:0]  # N'th number of the sequence to calculate
 port input  valid           # Is the input N valid?
 port output done            # Have we finished computing the result?

@@ -3,6 +3,8 @@
 # A simple program and associated instructions for interracting with AXI
 # bus channels.
 #
+
+using instructions "axi-instrs.txt"
     
 port output m_axi_araddr     [27:0] 
 port output m_axi_arburst    [1:0]  

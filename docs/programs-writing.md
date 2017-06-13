@@ -15,6 +15,8 @@ instructions. One instruction per line.
 
 ```
 
+<instruction / subprogram  includes>
+
 <port declarations>
 
 <variable declarations>
@@ -55,6 +57,8 @@ undefined.
 
 
 ```
+
+using instructions "my-instructions.txt"
 
 port output port_1 [5:0]
 

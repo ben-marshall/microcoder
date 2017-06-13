@@ -12,7 +12,6 @@ def parseArguments():
     parse all command line arguments to the program.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("instructions",help="Instructions definition file")
     parser.add_argument("program",help="The program to compile.")
     parser.add_argument("--output","-O",help="Output path", default="out.v")
     parser.add_argument("--gendocs","-D", help="Generate documentation",
@@ -44,9 +43,6 @@ def main():
 
     print("---------- uCode Compiler ----------")
     print("> Loading sources")
-    
-    instrs  = ucode.UCInstructionCollection()
-    instrs.parse(args.instructions)
 
     program = ucode.UCProgram()
     program.parseSource(args.program)
@@ -56,7 +52,7 @@ def main():
     resolver = ucode.UCResolver()
     resolver.addPorts(program.ports)
     resolver.addVariables(program.variables)
-    resolver.addInstructions(instrs)
+    resolver.addInstructions(program.instructions)
     resolver.addProgram(program)
     resolver.enable_coalescing = args.opt_coalesce
     resolver.resolve()

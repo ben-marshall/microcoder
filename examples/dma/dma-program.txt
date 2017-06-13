@@ -7,6 +7,7 @@
 # as a few control signals to do the setup of the dma operation.
 #
 
+using instructions "dma-instrs.txt"
 
 #
 # Program control port

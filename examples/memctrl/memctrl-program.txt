@@ -1,7 +1,9 @@
 
+using instructions "memctrl-instrs.txt"
+
 #
 #                       The code for the memctrl program.
-#
+# 
 #
 # ============================================================================
 #

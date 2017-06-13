@@ -1,7 +1,6 @@
 
 EXAMPLE = count
 
-SRC_INSTRS   = examples/${EXAMPLE}/${EXAMPLE}-instrs.txt
 SRC_PROGRAM  = examples/${EXAMPLE}/${EXAMPLE}-program.txt
 
 VERILOG_SRC  = work/${EXAMPLE}.v
@@ -27,6 +26,8 @@ ifdef DEBUG
     CC_FLAGS += --debug-states
 endif
 
+.PHONY: docs
+
 all: $(SIM_FILE) $(VERILOG_SRC) 
 ifdef DOT
 	$(MAKE) $(GRAPH)
@@ -38,8 +39,8 @@ dirs:
 #
 # Target to build verilog source files from the spec files for a program.
 #
-%.v : ${SRC_INSTRS} ${SRC_PROGRAM} dirs
-	${CC} ${SRC_INSTRS} ${SRC_PROGRAM} \
+%.v : ${SRC_PROGRAM} dirs
+	${CC} ${SRC_PROGRAM} \
         --output $@ \
         --gendocs --instrdocs work/doc-instrs.html \
         --progdocs work/doc-program.html \
@@ -54,6 +55,9 @@ dirs:
 
 run : $(SIM_FILE) $(VERILOG_SRC)
 	$(VVP) $(SIM_FILE)
+
+docs:
+	mkdocs serve
 
 %.svg : %.dot
 ifdef DOT

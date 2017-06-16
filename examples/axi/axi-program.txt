@@ -5,6 +5,11 @@
 #
 
 using instructions "axi-instrs.txt"
+
+# ============================================================================
+#
+#                           AXI Interface Ports     
+#
     
 port output m_axi_araddr     [27:0] 
 port output m_axi_arburst    [1:0]  
@@ -48,68 +53,38 @@ port input  m_axi_wready
 port output m_axi_wstrb      [15:0] 
 port output m_axi_wvalid            
 
-# -----------------------------------------------------------------------------
 
-# Somewhere to keep the addresses.
-state   address_counter     [31:0]
-
-# Somewhere we can store the read data from the AXI R data channel.
-state   read_data           [31:0]
-
-
-# -----------------------------------------------------------------------------
+# ============================================================================
+#
+#                      AXI Procedure State Variables
+#
 
 #
-# Program execution starts here. For now, just setup all of the AXI channels
-# such that they are all zeros.
+# AXI Procedure Return Address Register
 #
-block main
-    
-    axi_ar_setup
-    axi_aw_setup
-    axi_b_setup
-    axi_w_setup
-    axi_r_setup
+state   axi_ra  [11:0]
 
-    setc    address_counter 0
-    setc    read_data       0
 
-    goto post_setup
+# ============================================================================
+#
+#                        Callable AXI Procedures
+#
 
 #
-# Now that the AXI channels are setup, we can do some playing around.
+# procedure: axi_ld_w
 #
-block post_setup
-    
-    addc    address_counter     4
-    goto    ax_load_word
+#   Load a word from the address currently stored in m_axi_araddr
+#
+block   axi_ld_w
+
+    goto axi_ra
 
 
-block ax_load_word
-    
-    # Initiate the AXI read transaction
-    axi_ar_lw_init  address_counter
+#
+# procedure: axi_st_w
+#
+#   Store the data word to the address currently stored in m_axi_awaddr
+#
+block   axi_st_w
 
-    # Wait for the read request to be acknowledged
-    ifeqz           m_axi_arready   ax_load_word
-    goto            ax_load_word_wait
-
-block ax_load_word_wait
-
-    # Finish the previous read transaction.
-    axi_ar_end
-
-    # Signal that whenever the valid signal does come through, we are
-    # Already ready for the response.
-    axi_r_ack
-
-    # Store the recieved data
-    rd_port         read_data       m_axi_rdata
-
-    # Wait for the read response to be valid.
-    ifeqz           m_axi_rvalid    ax_load_word_wait
-    goto            ax_load_word_done
-
-
-block ax_load_word_done
-    goto            post_setup
+    goto axi_ra

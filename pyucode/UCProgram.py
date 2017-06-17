@@ -492,6 +492,7 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
 
             else:
                 print("Parse error on line %d" % (lno + 1))
+                print(line)
                 break
 
         if(current_name != None and

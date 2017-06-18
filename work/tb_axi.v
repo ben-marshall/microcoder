@@ -74,7 +74,7 @@ module tb_out ();
             @(posedge clk) begin
                 m_axi_arready = 1'b1;
             end
-            
+            #13
             @(posedge clk) begin
                 m_axi_arready = 1'b0;
                 m_axi_rdata = $random;

@@ -10,39 +10,39 @@ using instructions "memctrl-instrs.txt"
 #                               Program Ports
 #
 
-port input  uart_interrupt
+input  uart_interrupt
   
-port input  s_axi_aclk
-port input  s_axi_aresetn
-port output s_axi_awaddr    [31:0]
-port output s_axi_awvalid
-port input  s_axi_awready
-port output s_axi_wdata     [31:0]
-port output s_axi_wstrb     [3:0]
-port output s_axi_wvalid
-port input  s_axi_wready
-port input  s_axi_bresp     [1:0]
-port input  s_axi_bvalid
-port output s_axi_bready
-port output s_axi_araddr    [3:0]
-port output s_axi_arvalid
-port input  s_axi_arready
-port input  s_axi_rdata     [31:0]
-port input  s_axi_rresp     [1:0]
-port input  s_axi_rvalid
-port output s_axi_rready
+input  s_axi_aclk
+input  s_axi_aresetn
+output s_axi_awaddr    [31:0]
+output s_axi_awvalid
+input  s_axi_awready
+output s_axi_wdata     [31:0]
+output s_axi_wstrb     [3:0]
+output s_axi_wvalid
+input  s_axi_wready
+input  s_axi_bresp     [1:0]
+input  s_axi_bvalid
+output s_axi_bready
+output s_axi_araddr    [3:0]
+output s_axi_arvalid
+input  s_axi_arready
+input  s_axi_rdata     [31:0]
+input  s_axi_rresp     [1:0]
+input  s_axi_rvalid
+output s_axi_rready
 
 # ============================================================================
 #
 #                           Program State Variables
 #
 
-state   scratch_0
-state   scratch_1
-state   scratch_2
-state   scratch_3
-state   tmp_data            [7:0]
-state   op_counter          [7:0]
+reg  scratch_0
+reg  scratch_1
+reg  scratch_2
+reg  scratch_3
+reg  tmp_data            [7:0]
+reg  op_counter          [7:0]
 
 
 # ============================================================================
@@ -119,6 +119,7 @@ block decode_uart_cmd
     msk     scratch_1        tmp_data   8'h02
     msk     scratch_2        tmp_data   8'h04
     msk     scratch_3        tmp_data   8'h08
+    goto    call_cmd
 
     block call_cmd
 

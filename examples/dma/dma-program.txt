@@ -13,33 +13,33 @@ using instructions "dma-instrs.txt"
 # Program control port
 #
 
-port input  ctrl_valid
-port output ctrl_en
-port input  ctrl_src_addr_base   [31:0]
-port input  ctrl_dst_addr_base   [31:0]
-port input  ctrl_count           [7:0]
-port output ctrl_finished
+input  ctrl_valid
+output ctrl_en
+input  ctrl_src_addr_base   [31:0]
+input  ctrl_dst_addr_base   [31:0]
+input  ctrl_count           [7:0]
+output ctrl_finished
 
 #
 # Program data port
 #
 
-port output data_addr            [31:0]
-port output data_wdata           [31:0]
-port input  data_rdata           [31:0]
-port output data_valid
-port output data_w_en
-port input  data_en
+output data_addr            [31:0]
+output data_wdata           [31:0]
+input  data_rdata           [31:0]
+output data_valid
+output data_w_en
+input  data_en
 
 
 #
 # Program variables
 #
 
-state   counter                  [7:0]
-state   temp_data                [31:0]
-state   dst_addr                 [31:0]
-state   src_addr                 [31:0]
+reg counter                  [7:0]
+reg temp_data                [31:0]
+reg dst_addr                 [31:0]
+reg src_addr                 [31:0]
 
 
 #

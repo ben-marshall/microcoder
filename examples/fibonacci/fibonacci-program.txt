@@ -1,15 +1,15 @@
 
 using instructions "fibonacci-instrs.txt"
 
-port input  n        [7:0]  # N'th number of the sequence to calculate
-port input  valid           # Is the input N valid?
-port output done            # Have we finished computing the result?
-port output result   [63:0] # The result of calculating the n'th number.
+input  n        [7:0]  # N'th number of the sequence to calculate
+input  valid           # Is the input N valid?
+output reg done            # Have we finished computing the result?
+output reg result   [63:0] # The result of calculating the n'th number.
 
-state   counter      [7:0]
-state   num_a        [63:0]
-state   num_b        [63:0]
-state   tmp_a        [63:0]
+reg counter      [7:0]
+reg num_a        [63:0]
+reg num_b        [63:0]
+reg tmp_a        [63:0]
 
 block main
     

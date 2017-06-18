@@ -6,15 +6,15 @@
 
 using instructions "call-instrs.txt"
 
-port output valid
-port input  enable
-port output data       [7:0]
+output reg  valid
+input  comb enable
+output reg  data       [7:0]
 
-state counter_0        [3:0]
-state counter_1        [7:0]
+reg counter_0        [3:0]
+reg counter_1        [7:0]
 
-state ra               [11:0]
-state called
+reg   ra               [11:0]
+reg   called
 
 block main
     set     valid       0

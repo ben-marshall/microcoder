@@ -14,17 +14,18 @@ reg counter [7:0]
 block main
     axi_set     counter     0
     axi_set     m_axi_araddr    32'h40000000
+    axi_set     axi_ret         0
     goto        loop
 
 
 block loop
     axi_set     axi_ra          _current_state_
-    axi_set     axi_ret         1
     ifeqz       axi_ret         axi_ld_w
     ifnez       axi_ret         loop_cont
 
 block loop_cont
     inc         counter     1
+    axi_set     axi_ret         0
     goto        loop_end
 
 block loop_end

@@ -68,7 +68,7 @@ reg axi_ret
 #
 # Returned read data
 #
-reg axi_rdata [127:0]
+reg axi_rdata [31:0]
 
 # ============================================================================
 #
@@ -83,6 +83,7 @@ reg axi_rdata [127:0]
 block   axi_ld_w
     axi_ar_cfg  2 0 0 0 0 3'b010 0 0
     axi_set     m_axi_arvalid   1
+    axi_set     axi_ret         1
     goto        axi_ld_w_ar_wait
     
     block axi_ld_w_ar_wait
@@ -108,6 +109,7 @@ block   axi_ld_w
 block   axi_st_w
     axi_aw_cfg  2 0 0 0 0 3'b010 0 0 4'hF
     axi_set     m_axi_awvalid   1
+    axi_set     axi_ret         1
     goto        axi_st_w_aw_wait
     
     block axi_st_w_aw_wait
@@ -127,5 +129,3 @@ block   axi_st_w
 
     block axi_st_w_return
         goto axi_ra 
-
-    goto axi_ra

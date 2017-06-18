@@ -198,9 +198,12 @@ class UCResolver(object):
         Given an instance of a block, return a list of blocks which
         it could jump to.
         """
+        assert type(block) == UCProgramBlock, "Type should be UCProgramBlock\
+ but instead is '%s'" % type(block)
         tr = []
         for flowchange in block.flow_change:
-            tr.append(flowchange.target)
+            if(type(flowchange.target) == UCProgramBlock):
+                tr.append(flowchange.target)
         return tr
 
     def remove_unreachable_blocks(self):

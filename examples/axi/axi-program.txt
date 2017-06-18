@@ -11,47 +11,47 @@ using instructions "axi-instrs.txt"
 #                           AXI Interface Ports     
 #
     
-port output m_axi_araddr     [27:0] 
-port output m_axi_arburst    [1:0]  
-port output m_axi_arcache    [3:0]  
-port output m_axi_arid       [3:0]  
-port output m_axi_arlen      [7:0]  
-port output m_axi_arlock            
-port output m_axi_arprot     [2:0]  
-port output m_axi_arqos      [3:0]  
-port input  m_axi_arready           
-port output m_axi_arsize     [2:0]  
-port output m_axi_arvalid           
-                                    
-port output m_axi_awaddr     [27:0] 
-port output m_axi_awburst    [1:0]  
-port output m_axi_awcache    [3:0]  
-port output m_axi_awid       [3:0]  
-port output m_axi_awlen      [7:0]  
-port output m_axi_awlock            
-port output m_axi_awprot     [2:0]  
-port output m_axi_awqos      [3:0]  
-port input  m_axi_awready           
-port output m_axi_awsize     [2:0]  
-port output m_axi_awvalid           
-                                    
-port input  m_axi_bid        [3:0]   
-port output m_axi_bready            
-port input  m_axi_bresp      [1:0]   
-port input  m_axi_bvalid            
-                                    
-port input  m_axi_rdata      [31:0] 
-port input  m_axi_rid        [3:0]   
-port input  m_axi_rlast             
-port output m_axi_rready            
-port input  m_axi_rresp      [1:0]   
-port input  m_axi_rvalid            
-                                    
-port output m_axi_wdata      [31:0]
-port output m_axi_wlast             
-port input  m_axi_wready            
-port output m_axi_wstrb      [3:0] 
-port output m_axi_wvalid            
+output m_axi_araddr     [27:0] 
+output m_axi_arburst    [1:0]  
+output m_axi_arcache    [3:0]  
+output m_axi_arid       [3:0]  
+output m_axi_arlen      [7:0]  
+output m_axi_arlock            
+output m_axi_arprot     [2:0]  
+output m_axi_arqos      [3:0]  
+input  m_axi_arready           
+output m_axi_arsize     [2:0]  
+output m_axi_arvalid           
+                               
+output m_axi_awaddr     [27:0] 
+output m_axi_awburst    [1:0]  
+output m_axi_awcache    [3:0]  
+output m_axi_awid       [3:0]  
+output m_axi_awlen      [7:0]  
+output m_axi_awlock            
+output m_axi_awprot     [2:0]  
+output m_axi_awqos      [3:0]  
+input  m_axi_awready           
+output m_axi_awsize     [2:0]  
+output m_axi_awvalid           
+                               
+input  m_axi_bid        [3:0]   
+output m_axi_bready            
+input  m_axi_bresp      [1:0]   
+input  m_axi_bvalid            
+                               
+input  m_axi_rdata      [31:0] 
+input  m_axi_rid        [3:0]   
+input  m_axi_rlast             
+output m_axi_rready            
+input  m_axi_rresp      [1:0]   
+input  m_axi_rvalid            
+                               
+output m_axi_wdata      [31:0]
+output m_axi_wlast             
+input  m_axi_wready            
+output m_axi_wstrb      [3:0] 
+output m_axi_wvalid            
 
 
 # ============================================================================
@@ -62,13 +62,13 @@ port output m_axi_wvalid
 #
 # AXI Procedure Return Address Register
 #
-state   axi_ra  [11:0]
+reg axi_ra  [11:0]
 
 
 #
 # Returned read data
 #
-state   axi_rdata [127:0]
+reg axi_rdata [127:0]
 
 
 block main

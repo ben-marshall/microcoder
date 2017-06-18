@@ -4,133 +4,32 @@
 # bus channels.
 #
 
-using instructions "axi-instrs.txt"
-
-# ============================================================================
-#
-#                           AXI Interface Ports     
-#
-    
-output m_axi_araddr     [27:0] 
-output m_axi_arburst    [1:0]  
-output m_axi_arcache    [3:0]  
-output m_axi_arid       [3:0]  
-output m_axi_arlen      [7:0]  
-output m_axi_arlock            
-output m_axi_arprot     [2:0]  
-output m_axi_arqos      [3:0]  
-input  m_axi_arready           
-output m_axi_arsize     [2:0]  
-output m_axi_arvalid           
-                               
-output m_axi_awaddr     [27:0] 
-output m_axi_awburst    [1:0]  
-output m_axi_awcache    [3:0]  
-output m_axi_awid       [3:0]  
-output m_axi_awlen      [7:0]  
-output m_axi_awlock            
-output m_axi_awprot     [2:0]  
-output m_axi_awqos      [3:0]  
-input  m_axi_awready           
-output m_axi_awsize     [2:0]  
-output m_axi_awvalid           
-                               
-input  m_axi_bid        [3:0]   
-output m_axi_bready            
-input  m_axi_bresp      [1:0]   
-input  m_axi_bvalid            
-                               
-input  m_axi_rdata      [31:0] 
-input  m_axi_rid        [3:0]   
-input  m_axi_rlast             
-output m_axi_rready            
-input  m_axi_rresp      [1:0]   
-input  m_axi_rvalid            
-                               
-output m_axi_wdata      [31:0]
-output m_axi_wlast             
-input  m_axi_wready            
-output m_axi_wstrb      [3:0] 
-output m_axi_wvalid            
+using instructions "generic-instrs.txt"
+using subprogram   "axi-lib.txt"
 
 
-# ============================================================================
-#
-#                      AXI Procedure State Variables
-#
-
-#
-# AXI Procedure Return Address Register
-#
-reg axi_ra  [11:0]
-
-
-#
-# Returned read data
-#
-reg axi_rdata [127:0]
+reg counter [7:0]
 
 
 block main
-    axi_set     axi_ra  0
-    goto main
+    axi_set     counter     0
+    axi_set     m_axi_araddr    32'h40000000
+    goto        loop
 
-# ============================================================================
-#
-#                        Callable AXI Procedures
-#
 
-#
-# procedure: axi_ld_w
-#
-#   Load a word from the address currently stored in m_axi_araddr
-#
-block   axi_ld_w
-    axi_ar_cfg  2 0 0 0 0 3'b010 0 0
-    axi_set     m_axi_arvalid   1
-    goto        axi_ld_w_ar_wait
+block loop
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         1
+    ifeqz       axi_ret         axi_ld_w
+    ifnez       axi_ret         loop_cont
+
+block loop_cont
+    inc         counter     1
+    goto        loop_end
+
+block loop_end
+    ifeqz       counter     main
+    ifnez       counter     loop
+    goto        loop_cont
     
-    block axi_ld_w_ar_wait
-        axi_setifel   m_axi_arvalid     m_axi_arready   0   1
-        ifeqz         m_axi_arready     axi_ld_w_ar_wait
-        ifnez         m_axi_arready     axi_ld_w_rwait
-
-    block axi_ld_w_rwait
-        axi_mvif      axi_rdata         m_axi_rvalid    m_axi_rdata
-        axi_setifel   m_axi_rready      m_axi_rvalid    1   0
-        ifeqz         m_axi_rvalid      axi_ld_w_rwait
-        ifnez         m_axi_rvalid      axi_ld_w_return
-
-    block axi_ld_w_return
-        goto axi_ra 
-
-
-#
-# procedure: axi_st_w
-#
-#   Store the data word to the address currently stored in m_axi_awaddr
-#
-block   axi_st_w
-    axi_aw_cfg  2 0 0 0 0 3'b010 0 0 4'hF
-    axi_set     m_axi_awvalid   1
-    goto        axi_st_w_aw_wait
     
-    block axi_st_w_aw_wait
-        axi_setifel   m_axi_awvalid     m_axi_awready   0   1
-        ifeqz         m_axi_awready     axi_st_w_aw_wait
-        ifnez         m_axi_awready     axi_st_w_wd_wait
-    
-    block axi_st_w_wd_wait
-        axi_setifel   m_axi_wvalid      m_axi_awready   1   0
-        ifeqz         m_axi_wready      axi_st_w_wd_wait
-        ifnez         m_axi_wready      axi_st_w_bwait
-
-    block axi_st_w_bwait
-        axi_setifel   m_axi_bready      m_axi_bvalid    1   0
-        ifeqz         m_axi_bvalid      axi_st_w_bwait
-        ifnez         m_axi_bvalid      axi_st_w_return
-
-    block axi_st_w_return
-        goto axi_ra 
-
-    goto axi_ra

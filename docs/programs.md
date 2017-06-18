@@ -21,3 +21,6 @@ one might find on a typical microcontroller.
 Program variables are simply a collection of state variables which programs can
 use as scratch space for computation. They are similar to the general purpose
 registers (GPRS) of normal instruction set architectures.
+
+Both are declared in the same way, but behave differently depending on the
+type of variable.

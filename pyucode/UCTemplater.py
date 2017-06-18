@@ -36,7 +36,6 @@ class UCTemplater(object):
                 template.render(
                     core_name = "main",
                     variables = self.prog.variables,
-                    ports     = self.prog.ports,
                     instrs    = self.prog.instrs,
                     program   = self.prog.program,
                     debug_states = self.debug_states

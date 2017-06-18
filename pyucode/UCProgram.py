@@ -8,13 +8,20 @@ import os
 import sys
 import logging as log
 
-from .UCPorts import UCPort
-from .UCPorts import UCPortCollection
-
 from .UCInstructions import UCInstructionCollection
 
 from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
+from .UCState import UCVarStrings
+from .UCState import UCPortStrings
+from .UCState import UCTypePortIn  
+from .UCState import UCTypePortOut 
+from .UCState import UCTypePortNone
+from .UCState import UCPortTypes   
+from .UCState import UCTypeVarReg  
+from .UCState import UCTypeVarConst
+from .UCState import UCTypeVarComb 
+from .UCState import UCVarTypes    
 
 UCProgramFlowNone   = 0
 UCProgramFlowGoto   = 1
@@ -96,7 +103,7 @@ class UCProgramBlock(object):
         block.
         Each set is returned as a list in a tuple of the form 
         `(read set, write set)`. The list contains objects of type
-        UCPort or UCProgramVariable
+        UCProgramVariable
         """
         assert (self.resolved) , \
             "Blocks must be resolved before read set is constructed."
@@ -175,7 +182,6 @@ class UCProgram(object):
         self.blocks_by_name = {}
 
         self.variables  = UCProgramVariableCollection()
-        self.ports      = UCPortCollection() 
 
         # List of parsed instruction files included in this program.
         self.instructions = UCInstructionCollection()
@@ -308,55 +314,53 @@ class UCProgram(object):
                 log.error("The block with name '%s' has already been declared"% block.name)
 
 
-    def addPort(self, lineNo,tokens):
-        """
-        Add a port parsed from a program file on the given line.
-        """
-        if(len(tokens) < 3):
-            log.error("Line %d: Bad Port declaration: '%s'\n\
-Port declaration should be of form: 'port <input|output> <port name> [hi:lo]"\
-% (" ".join(tokens),lineNo))
-        
-        name = tokens[2]
-
-        toadd = UCPort(name)
-        toadd.is_input = tokens[1] == "input"
-        toadd.is_output= tokens[1] == "output"
-        toadd.description = ""
-
-        if(len(tokens)> 3 and tokens[3][0] != "#"):
-            hilo = tokens[3].split(":")
-            hi   = int(hilo[0].lstrip("["))
-            lo   = int(hilo[1].rstrip("]\n"))
-            toadd.hi = hi
-            toadd.lo = lo
-            toadd.width = 1 + (hi - lo)
-        self.ports.addPort(toadd)
-
-
     def addProgramVariable(self, lineNo,tokens):
         """
         Add a Program Variable parsed from a program file on the given line.
         """
         if(len(tokens) < 2):
-            log.error("Line %d: Bad Variable declaration: '%s'\n\
-Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
-% (" ".join(tokens),lineNo))
+            log.error("Line %d: Bad Variable declaration: '%s'\n\t"
+                % (" ".join(tokens),lineNo))
         
-        name = tokens[1]
+        name      = "name not found"
+        port_type = UCTypePortNone
+        var_type  = UCTypeVarReg
+        comb_expr = ""
+        idx       = 0
+        
+        if(tokens[idx] in UCPortStrings):
+            port_type   =  UCPortStrings[tokens[idx]]
+            if port_type == UCTypePortIn:
+                var_type = UCTypeVarComb
+            idx         += 1
 
-        toadd = UCProgramVariable(name, description="")
+        if(tokens[idx] in UCVarStrings):
+            var_type    =  UCVarStrings[tokens[idx]]
+            idx         += 1
 
-        if(len(tokens)> 2 and tokens[2][0] != "#"):
-            hilo = tokens[2].split(":")
-            hi   = int(hilo[0].lstrip("["))
-            lo   = int(hilo[1].rstrip("]\n"))
+        name      = tokens[idx]
+        idx      += 1
+
+        if(var_type == UCTypeVarComb):
+            comb_expr = "".join(tokens).partition("=")[2].partition("#")[0]
+
+
+        toadd = UCProgramVariable(name, port_type, var_type, description="")
+        toadd.comb_expr = comb_expr
+
+        if(len(tokens)> idx and tokens[idx][0] != "#"):
+            rstr = "".join(tokens[idx:]).partition('#')[0].partition("=")[0]
+            hilo = rstr.split(":")
+            hi   = int(hilo[0].lstrip(" ["))
+            lo   = int(hilo[1].rstrip(" ]\n"))
             toadd.hi = hi
             toadd.lo = lo
             toadd.width = 1 + (hi - lo)
+
         self.variables.addProgramVariable(toadd)
 
     
+
     def handleInclude(self,line_no, line_tokens, current_file):
         """
         Parses a single 'using' statement line
@@ -435,10 +439,8 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
                 
                 if(tokens[0] == "using"):
                     self.handleInclude(lno,tokens, filepath)
-                elif(tokens[0] == "port"):
-                    self.addPort(lno, tokens)
-                    pstate = BLOCKS_PORTS
-                elif(tokens[0] == "state"):
+                elif(tokens[0] in UCVarStrings or
+                     tokens[0] in UCPortStrings   ):
                     self.addProgramVariable(lno, tokens)
                     pstate = BLOCKS_PORTS
                 else:
@@ -454,10 +456,10 @@ Port declaration should be of form: 'state <varaiable  name> [hi:lo]"\
                     current_flowchange  = []
                     pstate = BLOCK 
 
-                elif(tokens[0] == "port"):
-                    self.addPort(lno, tokens)
-                elif(tokens[0] == "state"):
+                elif(tokens[0] in UCVarStrings or
+                     tokens[0] in UCPortStrings   ):
                     self.addProgramVariable(lno, tokens)
+
                 else:
                     pstate = ERROR
 

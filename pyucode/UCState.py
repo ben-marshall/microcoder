@@ -8,8 +8,26 @@ import logging as log
 
 import yaml
 
-UCPortInput = 0
-UCPortOutput= 1
+UCTypePortIn    = 0xA0
+UCTypePortOut   = 0xA1
+UCTypePortNone  = 0xA2 
+UCPortTypes     = [UCTypePortIn, UCTypePortOut, UCTypePortNone]
+
+UCPortStrings    = {
+    "input"   : UCTypePortIn,
+    "output"  : UCTypePortOut
+}
+
+UCTypeVarReg    = 0xB0
+UCTypeVarConst  = 0xB1
+UCTypeVarComb   = 0xB2
+UCVarTypes      = [UCTypeVarReg, UCTypeVarConst, UCTypeVarComb]
+
+UCVarStrings    = {
+    "reg"   : UCTypeVarReg  ,
+    "const" : UCTypeVarConst,
+    "comb"  : UCTypeVarComb
+}
 
 class UCProgramVariable(object):
     """
@@ -17,9 +35,11 @@ class UCProgramVariable(object):
     """
 
     def __init__(self, name, 
+                       port_type,
+                       var_type,
                        bits_hi      = 0, 
-                       bits_lo      = 0, 
-                       description  = None):
+                       bits_lo      = 0,
+                       description  = ""):
         """
         Create a new UCPort Object
         """
@@ -28,12 +48,64 @@ class UCProgramVariable(object):
         assert type(bits_hi) is int
         assert type(bits_lo) is int
         assert bits_hi >= bits_lo, "A port width must be greater than or equal to 1"
+        assert port_type in UCPortTypes, "Invalid port type"
+        assert var_type  in UCVarTypes, "Invalid var type"
 
+        self.port_type  = port_type
+        self.var_type   = var_type
         self.name       = name
         self.width      = 1 + bits_hi - bits_lo
         self.lo         = bits_lo
         self.hi         = bits_hi
         self.description= description.rstrip("\n")
+        self.comb_expr  = "0"
+
+        if(self.isRegVar() and self.isInPort()):
+            log.error("Input port '%s' cannot be of variable type 'reg'" %
+                self.name)
+
+    def __len__(self):
+        """
+        Returns how many bits wide the variable is.
+        """
+        return self.width
+    
+    def isRegVar(self):
+        """
+        Returns true if the variable is of type UCTypeVarReg
+        """
+        return self.var_type == UCTypeVarReg
+
+    def isConstVar(self):
+        """
+        Returns true if the variable is of type UCTypeVarConst
+        """
+        return self.var_type == UCTypeVarConst
+
+    def isCombVar(self):
+        """
+        Returns true if the variable is of type UCTypeVarComb
+        """
+        return self.var_type == UCTypeVarComb
+
+    def isPort(self):
+        """
+        Returns true if the variable is not of type UCTypePortNone
+        """
+        return self.port_type != UCTypePortNone
+
+    def isInPort(self):
+        """
+        Returns true if the variable is of type UCTypePortIn
+        """
+        return self.port_type == UCTypePortIn
+
+    def isOutPort(self):
+        """
+        Returns true if the variable is of type UCTypePortOut
+        """
+        return self.port_type == UCTypePortOut
+
 
 
 class UCProgramVariableCollection (object):
@@ -57,6 +129,19 @@ class UCProgramVariableCollection (object):
             return self.by_name[name]
         else:
             return None
+    
+    def getPortNames(self):
+        """
+        Return a list of all variable names which are ports
+        """
+        return [v.name for v in self.by_index if v.isPort()]
+
+    def getPorts(self):
+        """
+        Return a list of all variables which are also input or output
+        ports.
+        """
+        return [v for v in self.by_index if v.isPort()]
 
 
     def addProgramVariable(self, variable):
@@ -72,36 +157,3 @@ class UCProgramVariableCollection (object):
         else:
             log.error("The variable with name '%s' has already been declared"
                 % port.name)
-
-
-def parseProgramVariablesYAML(yaml_path):
-    """
-    Given a string to a yaml file, return a UCProgramVariableCollection object
-    describing the variables it contains.
-    """
-
-    tr = UCProgramVariableCollection()
-    
-    with open(yaml_path,"r") as fh:
-        contents = yaml.load(fh)
-
-        variables = contents["program_state"]
-
-        for variable_name in variables:
-            variable                = variables[variable_name]
-            variable_hi             = 0
-            variable_lo             = 0
-            variable_description    = ""
-
-            if ("range" in variable):
-                variable_hi = variable["range"][0]
-                variable_lo = variable["range"][1]
-            if("description" in variable):
-                variable_description = variable["description"]
-
-            toadd = UCProgramVariable(variable_name, bits_hi = variable_hi,
-                                      bits_lo = variable_lo,
-                                      description = variable_description)
-            tr.addProgramVariable(toadd)
-
-    return tr

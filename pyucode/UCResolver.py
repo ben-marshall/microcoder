@@ -8,9 +8,6 @@ import sys
 import copy
 import logging as log
 
-from .UCPorts import UCPort
-from .UCPorts import UCPortCollection
-
 from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
 
@@ -33,7 +30,6 @@ class UCResolver(object):
         Create a new resolver with initially no objects
         """
         self.variables  = UCProgramVariableCollection()
-        self.ports      = UCPortCollection()
         self.instrs     = UCInstructionCollection()
         self.program    = UCProgram()
         self.enable_coalescing = False
@@ -41,10 +37,6 @@ class UCResolver(object):
     def addVariables(self, variables):
         for v in variables.by_index:
             self.variables.addProgramVariable(v)
-    
-    def addPorts(self, ports_to_add):
-        for p in ports_to_add.by_index:
-            self.ports.addPort(p)
     
     def addInstructions(self, instrs):
         for i in instrs.by_index:
@@ -54,16 +46,12 @@ class UCResolver(object):
         for b in program.blocks:
             self.program.addProgramBlock(b)
 
-    def getVariableOrPort(self, var_or_port_name):
+    def getVariable(self, var_name):
         """
-        Searches the list of variables, then the list of ports for one
-        matching the supplied name.
+        Searches the list of variables for one matching the supplied name.
         Returns None if no matching object is found.
         """
-        tr = self.variables.getVariable(var_or_port_name)
-        if(tr != None):
-            return tr
-        tr = self.ports.getPort(var_or_port_name)
+        tr = self.variables.getVariable(var_name)
         if(tr != None):
             return tr
         return None
@@ -88,7 +76,7 @@ class UCResolver(object):
         
         for argument, val in zip(instr.arguments, args):
             
-            var = self.getVariableOrPort(val)
+            var = self.getVariable(val)
 
             if(argument.constant):
                 resolved_args[argument.name] = val
@@ -156,7 +144,7 @@ class UCResolver(object):
             for flow_change in block.flow_change:
                 if(flow_change.conditional):
                     varname = flow_change.variable
-                    v       = self.getVariableOrPort(varname)
+                    v       = self.getVariable(varname)
 
                     if(v != None):
                         flow_change.variable = v
@@ -308,7 +296,7 @@ class UCResolver(object):
         - All instructions used in a program must be defined.
         - Instructions must have the correct number of arguments.
         - All variable arguments used in an instruction must be defined as
-          either a program variable or a port.
+          a program variable.
         - All constant arguments used in an instruction must indeed be
           constants.
         - All blocks referenced within a program must be defined.

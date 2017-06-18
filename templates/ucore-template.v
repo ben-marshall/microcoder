@@ -2,13 +2,13 @@
 
 
 module ucore_{{core_name}} (
-{% for port_name in ports.by_name | sort -%}
-    {%-  set port = ports.by_name[port_name] %} 
+{% for port_name in variables.getPortNames() | sort -%}
+    {%-  set port = variables.getVariable(port_name) %} 
     {%-  set direction = "" -%} 
 
-    {%-  if(port.is_input)  -%}
+    {%-  if(port.isInPort())  -%}
         {%-  set direction = "input     " -%} 
-    {%-  elif(port.is_output)  -%}
+    {%-  elif(port.isOutPort())  -%}
         {%-  set direction = "output reg" -%} 
     {%-  endif %}
 
@@ -25,35 +25,18 @@ input   wire aresetn
 );
 
 // --------------------------------------------------------------
-// Output port value registers
-//
-
-{% for port_name in ports.by_name | sort -%}
-{%-  set port = ports.by_name[port_name] -%} 
-{%-  if(port.is_output)  -%}
-reg [{{port.hi}}:{{port.lo}}] n_{{port.name}};
-
-always @(posedge clk, negedge aresetn) begin : progress_{{port.name}}
-    if(!aresetn) begin
-        {{port.name}} <= 'b0;
-    end else begin
-        {{port.name}} <= n_{{port.name}};
-    end
-end
-
-{%  endif %}
-{%- endfor %}
-
-
-// --------------------------------------------------------------
 // Program State Variables
 //
 
 {% for variable_name in variables.by_name | sort %}
-    {%-  set variable = variables.by_name[variable_name] -%} 
+    {%-  set variable = variables.by_name[variable_name] %} 
 
 // {{variable.description}}
+{%  if variable.isRegVar() or variable.isOutPort() %}
+
+{%-  if not variable.isOutPort() -%}
 reg  [{{variable.hi}}:{{variable.lo}}]   {{variable.name}};
+{%-  endif %}
 reg  [{{variable.hi}}:{{variable.lo}}] n_{{variable.name}};
 
 always @(posedge clk, negedge aresetn) begin : progress_{{variable.name}}
@@ -63,6 +46,16 @@ always @(posedge clk, negedge aresetn) begin : progress_{{variable.name}}
         {{variable.name}} <= n_{{variable.name}};
     end
 end
+
+    {%- elif variable.isConstVar() -%}
+localparam  [{{variable.hi}}:{{variable.lo}}] {{variable.name}} = {{variable.comb_expr}};
+
+    {%- elif variable.isCombVar() and not variable.isPort() -%}
+
+wire [{{variable.hi}}:{{variable.lo}}] {{variable.name}};
+assign {{variable.name}} = {{variable.comb_expr}}; // Not implemented yet.
+
+    {%- endif -%}
 
 {% endfor %}
 
@@ -101,20 +94,13 @@ end
 //
 always @(*) begin : _select_next_state_
 
-    // All output ports keep their current value by default.
-
-{% for port_name in ports.by_name | sort -%}
-{%-  set port = ports.by_name[port_name] -%} 
-    {% if port.is_output -%}
-    n_{{port.name}} = {{port.name}};
-    {% endif %}
-{%- endfor %}
-    
     // All state variables keep their current value by default.
 
 {% for variable_name in variables.by_name | sort %}
     {%-  set variable = variables.by_name[variable_name] -%} 
+    {%-  if variable.isRegVar() or variable.isOutPort() -%}
     n_{{variable.name}} = {{variable.name}};
+    {% endif %}
 {% endfor %}
     
     _next_state_ = {{program.get_block_state_name(program.blocks_by_name["main"])}};

@@ -50,7 +50,6 @@ def main():
     print("> Resolving objects")
 
     resolver = ucode.UCResolver()
-    resolver.addPorts(program.ports)
     resolver.addVariables(program.variables)
     resolver.addInstructions(program.instructions)
     resolver.addProgram(program)

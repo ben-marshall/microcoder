@@ -13,3 +13,7 @@ do
     coverage run -a ${TOOL} ${BASEPATH}/${EX}/${EX}-program.txt \
         ${ARGS} --output work/out.v
 done
+
+mkdir -p ./work/cov
+coverage html   --include=./* --directory=./work/cov
+coverage report --include=./*

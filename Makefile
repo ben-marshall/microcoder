@@ -46,13 +46,8 @@ dirs:
         --progdocs work/doc-program.html \
         $(CC_FLAGS)
 
-everything:
-	$(MAKE) EXAMPLE=count
-	$(MAKE) EXAMPLE=call
-	$(MAKE) EXAMPLE=axi
-	$(MAKE) EXAMPLE=memctrl
-	$(MAKE) EXAMPLE=dma
-	$(MAKE) EXAMPLE=fibonacci
+coverage:
+	./bin/coverage.sh
 
 #
 # Target to convert verilog files into icarus verilog simulation exes

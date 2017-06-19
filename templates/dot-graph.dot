@@ -2,7 +2,12 @@
 digraph program_flow {
 
  {% for block in program.blocks %}
-    {{block.name}}
+    {{block.name}} [shape=record, 
+    labeljust=l,
+    label="{{block.name}} \n\n 
+    {%- for stm in block.src_statements -%}
+    {{loop.index}}: {{stm}}\l
+    {%- endfor %} "]
  {%- endfor %}
  
  {% for block in program.blocks %}

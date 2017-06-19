@@ -232,6 +232,7 @@ class UCResolver(object):
 
         parent.statements += child.statements
         parent.flow_change = child.flow_change
+        parent.src_statements += child.src_statements
 
         for block in self.program.blocks:
             for fc in block.flow_change:

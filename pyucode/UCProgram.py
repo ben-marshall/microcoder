@@ -6,6 +6,7 @@ Functions and classes for parsing and representing complete programs.
 import re
 import os
 import sys
+import copy
 import logging as log
 
 from .UCInstructions import UCInstructionCollection
@@ -87,6 +88,7 @@ class UCProgramBlock(object):
         self.index          = None
         self.resolved       = False
         self.removable      = False
+        self.src_statements = copy.deepcopy(statements)
 
     def is_atomic(self):
         """

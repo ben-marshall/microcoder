@@ -31,6 +31,11 @@ block loop_main
     goto        get_uart_status
 
 block get_uart_status
+    axi_set     m_axi_araddr    4'h8
+    axi_set     axi_ret         0
+    axi_set     axi_ra          _current_state_
+    ifeqz       axi_ret         axi_ld_w
+    ifnez       axi_ret         decode_uart_status
+    
+block decode_uart_status
     goto        loop_main
-    
-    

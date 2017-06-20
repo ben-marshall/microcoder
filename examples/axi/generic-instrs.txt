@@ -6,3 +6,12 @@ define inc
 begin
     dest = dest + value
 end
+
+
+define mask
+    argument variable dest
+    argument variable src
+    argument constant mask
+begin
+    dest = src & mask
+end

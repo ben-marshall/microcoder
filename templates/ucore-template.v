@@ -41,7 +41,7 @@ reg  [{{variable.hi}}:{{variable.lo}}] n_{{variable.name}};
 
 always @(posedge clk, negedge aresetn) begin : progress_{{variable.name}}
     if(!aresetn) begin
-        {{variable.name}} <= 'b0;
+        {{variable.name}} <= {{variable.width}}'b0;
     end else begin
         {{variable.name}} <= n_{{variable.name}};
     end

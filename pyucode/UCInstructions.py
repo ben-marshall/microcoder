@@ -152,7 +152,10 @@ class UCInstruction(object):
                     else:
                         log.error("Argument neither constant or variable: '%s'" %argument_info.name)
                 else:
-                    arg_statement += "%s " % t
+                    if(eq_seen):
+                        arg_statement += "%s " % t
+                    else:
+                        arg_statement += "n_%s " % t
             
             arg_statement += "; %s" % as_source
             tr.append(arg_statement)

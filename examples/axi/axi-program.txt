@@ -32,28 +32,28 @@ block loop_main
 
 block get_uart_status
     axi_set     m_axi_araddr    4'h8
-    axi_set     axi_ret         0
     axi_set     axi_ra          _current_state_
+    mask        mask_result     axi_rdata   1
+    axi_set     axi_ret         0
     ifeqz       axi_ret         axi_ld_w
     ifnez       axi_ret         decode_uart_status
     
 block decode_uart_status
-    mask        mask_result     axi_rdata   1
     ifeqz       mask_result     loop_main
     ifnez       mask_result     read_uart_rx
 
 block read_uart_rx
     axi_set     m_axi_araddr    4'h0
-    axi_set     axi_ret         0
     axi_set     axi_ra          _current_state_
     axi_set     m_axi_wdata     axi_rdata
+    axi_set     axi_ret         0
     ifeqz       axi_ret         axi_ld_w
     ifnez       axi_ret         write_uart_tx
 
 
 block write_uart_tx
     axi_set     m_axi_awaddr    4'h4
-    axi_set     axi_ret         0
     axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
     ifeqz       axi_ret         axi_st_w
     ifnez       axi_ret         loop_main

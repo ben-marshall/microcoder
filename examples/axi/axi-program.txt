@@ -8,29 +8,29 @@ using instructions "generic-instrs.txt"
 using subprogram   "axi-lib.txt"
 
 
-reg counter [7:0]
+reg recieved [7:0]
 
 
 block main
-    axi_set     counter     0
-    axi_set     m_axi_araddr    32'h40000000
+    axi_ar_cfg  2 0 0 0 0 3'b010 0 0
+    axi_aw_cfg  2 0 0 0 0 3'b010 0 0 4'hF
+    axi_set     m_axi_araddr    4'h0
     axi_set     axi_ret         0
-    goto        loop
+    goto        setup_uart_module
 
-
-block loop
+block setup_uart_module
+    axi_set     m_axi_awaddr    4'hC
+    axi_set     m_axi_wdata     32'b10011
+    axi_set     axi_ret         0
     axi_set     axi_ra          _current_state_
-    ifeqz       axi_ret         axi_ld_w
-    ifnez       axi_ret         loop_cont
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         loop_main
 
-block loop_cont
-    inc         counter     1
-    axi_set     axi_ret         0
-    goto        loop_end
 
-block loop_end
-    ifeqz       counter     main
-    ifnez       counter     loop
-    goto        loop_cont
+block loop_main
+    goto        get_uart_status
+
+block get_uart_status
+    goto        loop_main
     
     

@@ -82,13 +82,6 @@ define axi_ar_cfg
     argument constant [3:0] cache
 begin
     m_axi_arsize    = size
-    m_axi_arlen     = length
-    m_axi_arburst   = burst_type
-    m_axi_arqos     = qos 
-    m_axi_arlock    = lock
-    m_axi_arprot    = prot 
-    m_axi_arid      = id 
-    m_axi_arcache   = cache
 end
 
 
@@ -114,13 +107,6 @@ define axi_aw_cfg
     argument constant [3:0] strobe
 begin
     m_axi_awsize    = size
-    m_axi_awlen     = length
-    m_axi_awburst   = burst_type
-    m_axi_awqos     = qos 
-    m_axi_awlock    = lock
-    m_axi_awprot    = prot 
-    m_axi_awid      = id 
-    m_axi_awcache   = cache
     m_axi_wstrb     = strobe
 end
 

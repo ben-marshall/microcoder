@@ -48,11 +48,64 @@ block read_uart_rx
     axi_set     m_axi_wdata     axi_rdata
     axi_set     axi_ret         0
     ifeqz       axi_ret         axi_ld_w
-    ifnez       axi_ret         write_uart_tx
+    ifnez       axi_ret         decode_data
+
+block decode_data
+    testeqc     mask_result     axi_rdata  "a"
+    goto        act_on_data
+
+block act_on_data
+    ifeqz       mask_result     echo_data
+    ifnez       mask_result     say_hello_h
 
 
-block write_uart_tx
+block echo_data
     axi_set     m_axi_awaddr    4'h4
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         loop_main
+
+
+
+block say_hello_h
+    axi_set     m_axi_awaddr    4'h4
+    axi_set     m_axi_wdata     "h"
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         say_hello_e
+
+
+block say_hello_e
+    axi_set     m_axi_awaddr    4'h4
+    axi_set     m_axi_wdata     "e"
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         say_hello_l
+
+
+block say_hello_l
+    axi_set     m_axi_awaddr    4'h4
+    axi_set     m_axi_wdata     "l"
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         say_hello_l2
+
+
+block say_hello_l2
+    axi_set     m_axi_awaddr    4'h4
+    axi_set     m_axi_wdata     "l"
+    axi_set     axi_ra          _current_state_
+    axi_set     axi_ret         0
+    ifeqz       axi_ret         axi_st_w
+    ifnez       axi_ret         say_hello_o
+
+block say_hello_o
+    axi_set     m_axi_awaddr    4'h4
+    axi_set     m_axi_wdata     "o"
     axi_set     axi_ra          _current_state_
     axi_set     axi_ret         0
     ifeqz       axi_ret         axi_st_w

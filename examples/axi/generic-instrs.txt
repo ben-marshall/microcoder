@@ -15,3 +15,11 @@ define mask
 begin
     dest = src & mask
 end
+
+define testeqc
+    argument variable dest
+    argument variable var
+    argument constant value
+begin
+    dest = &(~( var ^ value )) 
+end

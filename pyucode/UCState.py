@@ -4,7 +4,7 @@ Contains classes and functions for loading and representing program state
 variables
 """
 
-import logging as log
+import logging
 
 import yaml
 
@@ -50,6 +50,7 @@ class UCProgramVariable(object):
         assert bits_hi >= bits_lo, "A port width must be greater than or equal to 1"
         assert port_type in UCPortTypes, "Invalid port type"
         assert var_type  in UCVarTypes, "Invalid var type"
+        self.log = logging.getLogger(__name__)
 
         self.port_type  = port_type
         self.var_type   = var_type
@@ -61,7 +62,7 @@ class UCProgramVariable(object):
         self.comb_expr  = "0"
 
         if(self.isRegVar() and self.isInPort()):
-            log.error("Input port '%s' cannot be of variable type 'reg'" %
+            self.log.error("Input port '%s' cannot be of variable type 'reg'" %
                 self.name)
 
     def __len__(self):
@@ -117,6 +118,7 @@ class UCProgramVariableCollection (object):
         """
         Create a new empty collection of ports.
         """
+        self.log = logging.getLogger(__name__)
 
         self.by_index = []
         self.by_name  = {}
@@ -155,5 +157,5 @@ class UCProgramVariableCollection (object):
             self.by_name[variable.name] = variable
             self.by_index.append(variable)
         else:
-            log.error("The variable with name '%s' has already been declared"
+            self.log.error("The variable with name '%s' has already been declared"
                 % port.name)

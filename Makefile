@@ -22,6 +22,10 @@ ifdef DOT
     CC_FLAGS += --flowgraph --graphpath work/graph.dot
 endif
 
+ifdef VERBOSE
+    CC_FLAGS += --verbose
+endif
+
 ifdef DEBUG
     CC_FLAGS += --debug-states
 endif

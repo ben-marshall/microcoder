@@ -7,7 +7,7 @@ import re
 import os
 import sys
 import copy
-import logging as log
+import logging
 
 from .UCInstructions import UCInstructionCollection
 
@@ -35,6 +35,7 @@ class UCProgramFlowChange(object):
         """
         Create a new program flow change object from source.
         """
+        self.log = logging.getLogger(__name__)
         self.src=src
         self.change_type    = UCProgramFlowNone
         self.target         = None
@@ -51,7 +52,7 @@ class UCProgramFlowChange(object):
         tokens = self.src.split(" ")
         
         if(len(tokens) <= 1):
-            log.error("Control flow change without target")
+            self.log.error("Control flow change without target")
 
         if(tokens[0] == "goto"):
             self.change_type    = UCProgramFlowGoto
@@ -82,6 +83,7 @@ class UCProgramBlock(object):
         Create a new program block with the supplied statments and control
         flow change at the end.
         """
+        self.log = logging.getLogger(__name__)
         self.name           = name
         self.statements     = statements
         self.flow_change    = flow_change
@@ -162,7 +164,7 @@ class UCProgramBlock(object):
             tr.append(newblock)
             namecounter += 1
 
-        print("Atomised block '%s' into %d sub-blocks" % 
+        self.log.info("Atomised block '%s' into %d sub-blocks" % 
             (self.name, len(tr)))
 
         return tr
@@ -178,6 +180,7 @@ class UCProgram(object):
         """
         Create a new, empty program.
         """
+        self.log = logging.getLogger(__name__)
         self.block_count = 0
 
         self.blocks     = []
@@ -245,7 +248,7 @@ class UCProgram(object):
                 elif(flow_change.change_type == UCProgramFlowIfNez):
                     cmp_type = " != 0"
                 else:
-                    log.error("Unknown conditional jump type")
+                    self.log.error("Unknown conditional jump type")
 
                 if(is_first):
                     tree.append("if ( %s %s )" % 
@@ -313,7 +316,7 @@ class UCProgram(object):
                 self.blocks_by_name[block.name]=block
                 self.block_count = self.block_count + 1
             else:
-                log.error("The block with name '%s' has already been declared"% block.name)
+                self.log.error("The block with name '%s' has already been declared"% block.name)
 
 
     def addProgramVariable(self, lineNo,tokens):
@@ -321,7 +324,7 @@ class UCProgram(object):
         Add a Program Variable parsed from a program file on the given line.
         """
         if(len(tokens) < 2):
-            log.error("Line %d: Bad Variable declaration: '%s'\n\t"
+            self.log.error("Line %d: Bad Variable declaration: '%s'\n\t"
                 % (" ".join(tokens),lineNo))
         
         name      = "name not found"
@@ -371,23 +374,23 @@ class UCProgram(object):
         assert (line_tokens[0] == "using"), "First element of line_tokens should be 'using'"
 
         if ( len(line_tokens) < 3 ):
-            log.error("Bad 'using' statement on line %d" % line_no)
-            log.error("Should be of the form 'using [instructions|subprogram] 'filepath'")
+            self.log.error("Bad 'using' statement on line %d" % line_no)
+            self.log.error("Should be of the form 'using [instructions|subprogram] 'filepath'")
         
         base     = os.path.dirname(current_file)
         filepath = "".join(line_tokens[2:]).lstrip("'\"").rstrip("'\"")
         filepath = os.path.join(base,filepath)
 
         if(line_tokens[1] == "instructions"):
-            log.info("Parsing instructions file: '%s'" % filepath)
+            self.log.info("Parsing instructions file: '%s'" % filepath)
             self.instructions.parse(filepath)
 
         elif(line_tokens[1] == "subprogram"):
-            log.info("Parsing subprogram file: '%s'" % filepath)
+            self.log.info("Parsing subprogram file: '%s'" % filepath)
             self.parseSource(filepath)
 
         else:
-            log.error("unknown using directive '%s', should be 'instructions' or 'subprogram'" % line_tokens[1])
+            self.log.error("unknown using directive '%s', should be 'instructions' or 'subprogram'" % line_tokens[1])
 
 
     def parseSource(self, filepath):
@@ -427,7 +430,7 @@ class UCProgram(object):
                 toadd = UCProgramBlock(current_name,
                                        current_statements,
                                        current_flowchange)
-                print("Add block '%s'" % current_name)
+                self.log.info("Add block '%s'" % current_name)
                 self.addProgramBlock(toadd)
 
 
@@ -488,15 +491,14 @@ class UCProgram(object):
                 elif(tokens[0] in ["goto", "ifeqz", "ifnez"]):
                     current_flowchange.append(UCProgramFlowChange(line))
                 elif(tokens[0] == "port"):
-                    log.error("Line %d: Cannot put port declarations inside blocks." % lno)
+                    self.log.error("Line %d: Cannot put port declarations inside blocks." % lno)
                 elif(tokens[0] == "state"):
-                    log.error("Line %d: Cannot put state delcarations inside blocks." % lno)
+                    self.log.error("Line %d: Cannot put state delcarations inside blocks." % lno)
                 else:
                     current_statements.append(line)
 
             else:
-                print("Parse error on line %d" % (lno + 1))
-                print(line)
+                self.log.error("Parse error on line %d: %s" % (lno + 1, line))
                 break
 
         if(current_name != None and
@@ -514,4 +516,4 @@ if __name__ =="__main__":
     program.parseSource(sys.argv[1])
     
     for block in program.blocks:
-        print("- %s" % block.name)
+        self.log.info("- %s" % block.name)

@@ -6,7 +6,7 @@ proper objects.
 
 import sys
 import copy
-import logging as log
+import logging
 
 from .UCState import UCProgramVariable
 from .UCState import UCProgramVariableCollection
@@ -29,6 +29,7 @@ class UCResolver(object):
         """
         Create a new resolver with initially no objects
         """
+        self.log = logging.getLogger(__name__)
         self.variables  = UCProgramVariableCollection()
         self.instrs     = UCInstructionCollection()
         self.program    = UCProgram()
@@ -84,14 +85,14 @@ class UCResolver(object):
             elif(argument.variable):
                 
                 if(var == None):
-                    log.error("Variable '%s' referenced by instruction '%s'\
+                    self.log.error("Variable '%s' referenced by instruction '%s'\
  and used for argument '%s' has not been declared" %
                         (val, instr.name, argument.name))
                 else:
                     resolved_args[argument.name] = var
 
             else:
-                log.error("Argument %s of instruction %s is neither a variable\
+                self.log.error("Argument %s of instruction %s is neither a variable\
                 or constant type. Is it properly defined?" % 
                     (argument.name, instr.name))
 
@@ -108,7 +109,7 @@ class UCResolver(object):
         prev_block = None
 
         for block in self.program.blocks:
-            print("Block: %s" % block.name)
+            self.log.info("Block: %s" % block.name)
 
             # Check each statement (instruction) in the block.
             for i in range(0,len(block.statements)):
@@ -123,7 +124,7 @@ class UCResolver(object):
                     instr       = self.instrs.getInstruction(mnemonic)
 
                     if(instr == None):
-                        log.error("Instruction '%s' in block '%s' not defined."
+                        self.log.error("Instruction '%s' in block '%s' not defined."
                             % (mnemonic, block.name))
                     else:
                         resolved = self.resolveInstructionArguments(
@@ -132,10 +133,10 @@ class UCResolver(object):
                         block.statements[i] = resolved
 
                 else:
-                    print("Unexpected statement type: %s" % statement_type)
+                    self.log.info("Unexpected statement type: %s" % statement_type)
 
             if(len(block.flow_change) == 0):
-                log.error("The block '%s' has no defined target block to \
+                self.log.error("The block '%s' has no defined target block to \
                 jump to afterwards. This can lead to unpredictable \
                 behaviour."%block.name)
 
@@ -149,7 +150,7 @@ class UCResolver(object):
                     if(v != None):
                         flow_change.variable = v
                     else:
-                        log.error("Cannot find conditional variable '%s' used\
+                        self.log.error("Cannot find conditional variable '%s' used\
  at the end of block '%s'" % (varname, block.name))
 
                 jump_target = flow_change.target
@@ -165,7 +166,7 @@ class UCResolver(object):
                         flow_change.to_variable = True
 
                     else:
-                        log.error("Jump target '%s' at the end of block '%s'\
+                        self.log.error("Jump target '%s' at the end of block '%s'\
  does not exist." % (jump_target, block.name))
 
             block.resolved = True
@@ -217,7 +218,7 @@ class UCResolver(object):
             outset  = self.outgoing_blocks(block)
 
             if(len(inset) + len(outset) == 0 or block.removable):
-                print("Removing un-reachable block: '%s'" % block.name)
+                self.log.info("Removing un-reachable block: '%s'" % block.name)
             else:
                 newlist.append(block)
         self.program.blocks = newlist
@@ -228,7 +229,7 @@ class UCResolver(object):
         Merge two blocks together.
         """
 
-        print("O: Merging block %s into %s" % (child.name,parent.name))
+        self.log.debug("O: Merging block %s into %s" % (child.name,parent.name))
 
         parent.statements += child.statements
         parent.flow_change = child.flow_change
@@ -253,7 +254,7 @@ class UCResolver(object):
         for i in range(0,len(self.program.blocks)):
             block = self.program.blocks[i]
 
-            print("C: %s" % block.name)
+            self.log.debug("C: %s" % block.name)
 
             inset   = self.incoming_blocks(block)
             outset  = self.outgoing_blocks(block)
@@ -310,7 +311,7 @@ class UCResolver(object):
         self.resolveInstructions()
         self.check_reads_and_writes()
         if(self.enable_coalescing):
-            print(">> Pre-coalesce state count: %d" % len(self.program.blocks))
+            self.log.info(">> Pre-coalesce state count: %d" % len(self.program.blocks))
             self.coalesce_program()
             self.remove_unreachable_blocks()
-            print(">> Post-coalesce state count %d" % len(self.program.blocks))
+            self.log.info(">> Post-coalesce state count %d" % len(self.program.blocks))

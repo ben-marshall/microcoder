@@ -159,10 +159,154 @@ end
 //
 //  Add an immediate to the upper 12-bits of the program counter.
 //
-define rv_lui
+define rv_auipc
     argument variable dest
     argument variable pc
     argument constant immedaite
 begin
     dest = { immediate , 12'b0 } + pc
+end
+
+
+//
+// instruction: add
+//
+//  Add rs to rt and put the result in rd
+//
+define rv_add
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 + src2
+end
+
+
+//
+// instruction: slt
+//
+//  Place 1 in dest if src1 is less than the src2, otherwise 0
+//
+define rv_slt
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest =  src1 < src2
+end
+
+
+//
+// instruction: sltu
+//
+//  Place 1 in dest if src1 is less than the src2, otherwise 0.
+//  Treats everything as unsigned.
+//
+define rv_sltu
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = $unsigned( src1 ) < $unsigned ( src2 )
+end
+
+
+//
+// instruction: and
+//
+//  Perform a bitwise and between the src1 register and src2
+//  register and put the result in dest
+//
+define rv_and
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 & src2
+end
+
+
+//
+// instruction: or
+//
+//  Perform a bitwise or between the src1 register and src2
+//  register and put the result in dest
+//
+define rv_or
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 | src2
+end
+
+
+//
+// instruction: xor
+//
+//  Perform a bitwise xor between the src1 register and src2
+//  register and put the result in dest
+//
+define rv_xor
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 ^ src2
+end
+
+
+//
+// instruction: sll
+//
+//  Perform a logical bitshift left of src1 by the low 5 bits of source 2
+//
+define rv_sll
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 << src2 [4:0]
+end
+
+
+//
+// instruction: srl
+//
+//  Perform a logical bitshift right of src1 by the low 5 bits of source 2
+//
+define rv_srl
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 >> src2 [4:0]
+end
+
+
+//
+// instruction: sra
+//
+//  Perform an arithmetic bitsift right of src1 by the low 5 bits of source 2
+//
+define rv_sra
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = $signed ( src1 ) >>> $signed ( src2 [4:0] )
+end
+
+
+//
+// instruction: sub
+//
+//  Subtract src2 from src1 and put the result in dest
+//
+define rv_sub
+    argument variable dest
+    argument variable src1
+    argument variable src2
+begin
+    dest = src1 - src2
 end

@@ -76,16 +76,29 @@ class UCResolver(object):
                                             memonic, instr.name)
         
         for argument, val in zip(instr.arguments, args):
-            
-            var = self.getVariable(val)
 
             if(argument.constant):
-                resolved_args[argument.name] = val
+                
+                if(val[0] == "*"):
+                    if (val[1:] in self.program.blocks_by_name):
+                        # We are de-referencing a block / state encoding.
+                        block = self.program.blocks_by_name[val[1:]]
+                        resolved_args[argument.name] = \
+                            self.program.get_block_state_name(block)
+                    else:
+                        # Bad reference to a block name.
+                        self.log.error(
+                            "Could not find de-referenced block '*%s'" % (
+                            val[1:]))
+                else:
+                    resolved_args[argument.name] = val
 
             elif(argument.variable):
+            
+                var = self.getVariable(val)
                 
                 if(var == None):
-                    self.log.error("Variable '%s' referenced by instruction '%s'\
+                    self.log.error("Variable '%s' referenced by '%s'\
  and used for argument '%s' has not been declared" %
                         (val, instr.name, argument.name))
                 else:

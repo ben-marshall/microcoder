@@ -35,10 +35,8 @@ block loop
 
 
 block call_iface
-    set     ra          _current_state_
-    set     called      1
-    ifeqz   called      loop_top
-    ifnez   called      do_iface
+    set     ra          *loop_top
+    goto    do_iface
 
 
 

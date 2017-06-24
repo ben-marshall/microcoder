@@ -272,6 +272,9 @@ class UCResolver(object):
 
             inset   = self.incoming_blocks(block)
             outset  = self.outgoing_blocks(block)
+
+            if(block.name == "main"):
+                continue
             
             if(len(inset) + len(outset) == 0):
                 block.removable = True and not candidate.gets_dereferenced
@@ -298,8 +301,9 @@ class UCResolver(object):
                 
                 self.program.blocks[i] = self.coalesce_blocks(block,candidate)
                 candidate.removable = True and not candidate.gets_dereferenced
-                changes += 1
-                break
+                if(candidate.removable):
+                    changes += 1
+                    break
 
         if(changes > 0):
             self.remove_unreachable_blocks()

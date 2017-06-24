@@ -1,0 +1,9 @@
+
+
+using subprogram "riscv-lib.txt"
+
+input   start_program
+
+block main
+
+    goto main

@@ -1,0 +1,168 @@
+
+//
+// RISCV Instruction Library
+// 
+//  This file contains definitions for the RISCV RV32UI instruction set.
+//
+
+
+//
+// instruction: addi
+//
+//  Add an immediate to rs and store the result in rd
+//
+define rv_addi
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest = src + immediate
+end
+
+
+//
+// instruction: slti
+//
+//  Place 1 in dest if src is less than the immediate, or 0 if it is
+//  greater than or equal to the immediate.
+//
+define rv_slti
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest =  src < immediate 
+end
+
+
+//
+// instruction: sltiu
+//
+//  Place 1 in dest if src is less than the immediate, or 0 if it is
+//  greater than or equal to the immediate. Treats everything as unsigned.
+//
+define rv_sltiu
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest = $unsigned( src ) < $unsigned ( immediate )
+end
+
+
+//
+// instruction: andi
+//
+//  Perform a bitwise and between the src register and  sign-extended 
+//  immediate and put the result in dest
+//
+define rv_andi
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest = src & immediate
+end
+
+
+//
+// instruction: ori
+//
+//  Perform a bitwise or between the src register and  sign-extended 
+//  immediate and put the result in dest
+//
+define rv_ori
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest = src | immediate
+end
+
+
+//
+// instruction: xori
+//
+//  Perform a bitwise xor between the src register and  sign-extended 
+//  immediate and put the result in dest
+//
+define rv_xori
+    argument variable dest
+    argument variable src
+    argument constant immediate
+begin
+    dest = src ^ immediate
+end
+
+
+//
+// instruction: slli
+//
+//  Perform a bitwise logical shift left on the src register by the
+//  immediate and put the result in dest
+//
+define rv_slli
+    argument variable dest
+    argument variable src
+    argument constant shift
+begin
+    dest = src << shift
+end
+
+
+//
+// instruction: srli
+//
+//  Perform a bitwise logical shift right on the src register by the
+//  immediate and put the result in dest
+//
+define rv_srli
+    argument variable dest
+    argument variable src
+    argument constant shift
+begin
+    dest = src >> shift
+end
+
+
+//
+// instruction: srai
+//
+//  Perform an arithmetic shift right on the src register by the
+//  immediate and put the result in dest
+//
+define rv_srai
+    argument variable dest
+    argument variable src
+    argument constant shift
+begin
+    dest = $signed ( $signed( src ) >> $signed( shift ) )
+end
+
+
+//
+// instruction: lui
+//
+//  Load the upper 20 bits of a registe with an immediate value and zero the
+//  lower 12 bits of the register
+//
+define rv_lui
+    argument variable dest
+    argument constant immedaite
+begin
+    dest = { immediate , 12'b0 }
+end
+
+
+//
+// instruction: auipc
+//
+//  Add an immediate to the upper 12-bits of the program counter.
+//
+define rv_lui
+    argument variable dest
+    argument variable pc
+    argument constant immedaite
+begin
+    dest = { immediate , 12'b0 } + pc
+end

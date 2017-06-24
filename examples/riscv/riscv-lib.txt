@@ -1,0 +1,42 @@
+
+
+using instructions "riscv-instrs.txt"
+
+#
+# RISCV General Purpose Registers.
+#
+
+reg rv_pc  [31:0]
+
+const rv_x0  [31:0] = 0
+reg rv_x1  [31:0]
+reg rv_x2  [31:0]
+reg rv_x3  [31:0]
+reg rv_x4  [31:0]
+reg rv_x5  [31:0]
+reg rv_x6  [31:0]
+reg rv_x7  [31:0]
+reg rv_x8  [31:0]
+reg rv_x9  [31:0]
+reg rv_x10 [31:0]
+reg rv_x11 [31:0]
+reg rv_x12 [31:0]
+reg rv_x13 [31:0]
+reg rv_x14 [31:0]
+reg rv_x15 [31:0]
+reg rv_x16 [31:0]
+reg rv_x17 [31:0]
+reg rv_x18 [31:0]
+reg rv_x19 [31:0]
+reg rv_x20 [31:0]
+reg rv_x21 [31:0]
+reg rv_x22 [31:0]
+reg rv_x23 [31:0]
+reg rv_x24 [31:0]
+reg rv_x25 [31:0]
+reg rv_x26 [31:0]
+reg rv_x27 [31:0]
+reg rv_x28 [31:0]
+reg rv_x29 [31:0]
+reg rv_x31 [31:0]
+

@@ -356,7 +356,7 @@ class UCProgram(object):
 
 
         toadd = UCProgramVariable(name, port_type, var_type, description="")
-        toadd.comb_expr = comb_expr
+        toadd.const_expr = comb_expr
 
         if(len(tokens)> idx and tokens[idx][0] != "#"):
             rstr = "".join(tokens[idx:]).partition('#')[0].partition("=")[0]
@@ -454,6 +454,7 @@ class UCProgram(object):
                     self.addProgramVariable(lno, tokens)
                     pstate = BLOCKS_PORTS
                 else:
+                    self.log.error("0")
                     pstate = ERROR
 
             elif(pstate == BLOCKS_PORTS):
@@ -471,6 +472,7 @@ class UCProgram(object):
                     self.addProgramVariable(lno, tokens)
 
                 else:
+                    self.log.error("1")
                     pstate = ERROR
 
             elif(pstate == BLOCK):

@@ -7,7 +7,7 @@
 - [X] Call / return ~~using the stack~~ using generic variables.
 - [X] Support for include files / packages/ modules.
 - [ ] Multiple instantiations of included files.
-- [ ] Make it possible to access state (block) encodings directly for better
+- [X] Make it possible to access state (block) encodings directly for better
       call / return support.
 - [ ] Inlineable blocks rather than callable blocks.
 
@@ -34,4 +34,4 @@
 
 - [ ] Stack example
 - [X] Finish the AXI example
-- [ ] Mini RISCV registers and instructions. RV32UI Only.
+- [X] Mini RISCV registers and instructions. RV32UI Only.

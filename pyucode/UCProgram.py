@@ -78,11 +78,15 @@ class UCProgramBlock(object):
     flow statement at the end.
     """
 
+    __count__ = 0
+
     def __init__(self, name, statements, flow_change):
         """
         Create a new program block with the supplied statments and control
         flow change at the end.
         """
+        self.id  = UCProgramBlock.__count__
+        UCProgramBlock.__count__ = UCProgramBlock.__count__ + 1
         self.log = logging.getLogger(__name__)
         self.name           = name
         self.statements     = statements
@@ -219,7 +223,7 @@ class UCProgram(object):
 
         for block in self.blocks:
 
-            tr.append(self.get_block_state_name(block))
+            tr.append((self.get_block_state_name(block), block.id))
 
         return tr
 

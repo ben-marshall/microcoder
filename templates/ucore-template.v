@@ -66,7 +66,7 @@ assign {{variable.name}} = {{variable.comb_expr}}; // Not implemented yet.
 //
 // State encodings.
 {%- for statename in program.synth_state_encodings() %}
-localparam {{statename}} = {{loop.index0}};
+localparam {{statename[0]}} = {{statename[1]}};
 {%- endfor %}
 
 //

@@ -17,6 +17,13 @@ input       rv_mem_error
 
 
 #
+# RISCV library link register
+#   Used to return from blocks defined in this file.
+#
+
+reg rv_lr  [11:0]
+
+#
 # RISCV General Program Counter - Visible State So Needs including.
 #
 
@@ -59,3 +66,44 @@ reg rv_x28 [31:0]
 reg rv_x29 [31:0]
 reg rv_x31 [31:0]
 
+
+block rv_initialise
+
+    rv_lui rv_mem_valid     20'b0
+    rv_lui rv_mem_w_en      20'b0
+    rv_lui rv_mem_addr      20'b0
+    rv_lui rv_mem_wdata     20'b0
+    rv_lui rv_mem_byte_en   20'b0
+
+    rv_lui rv_x1            20'b0
+    rv_lui rv_x2            20'b0
+    rv_lui rv_x3            20'b0
+    rv_lui rv_x4            20'b0
+    rv_lui rv_x5            20'b0
+    rv_lui rv_x6            20'b0
+    rv_lui rv_x7            20'b0
+    rv_lui rv_x8            20'b0
+    rv_lui rv_x9            20'b0
+    rv_lui rv_x10           20'b0
+    rv_lui rv_x11           20'b0
+    rv_lui rv_x12           20'b0
+    rv_lui rv_x13           20'b0
+    rv_lui rv_x14           20'b0
+    rv_lui rv_x15           20'b0
+    rv_lui rv_x16           20'b0
+    rv_lui rv_x17           20'b0
+    rv_lui rv_x18           20'b0
+    rv_lui rv_x19           20'b0
+    rv_lui rv_x20           20'b0
+    rv_lui rv_x21           20'b0
+    rv_lui rv_x22           20'b0
+    rv_lui rv_x23           20'b0
+    rv_lui rv_x24           20'b0
+    rv_lui rv_x25           20'b0
+    rv_lui rv_x26           20'b0
+    rv_lui rv_x27           20'b0
+    rv_lui rv_x28           20'b0
+    rv_lui rv_x29           20'b0
+    rv_lui rv_x31           20'b0
+
+    goto    rv_lr

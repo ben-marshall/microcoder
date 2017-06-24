@@ -5,5 +5,8 @@ using subprogram "riscv-lib.txt"
 input   start_program
 
 block main
+    rv_set  rv_lr *run_program
+    goto    rv_initialise
 
-    goto main
+block run_program
+    goto run_program

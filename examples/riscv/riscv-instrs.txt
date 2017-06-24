@@ -6,6 +6,19 @@
 //
 
 
+
+//
+// rv_set
+//
+//  Set a variable to an immediate value. This is not a RISCV instruction!
+//
+define rv_set
+    argument variable dest
+    argument constant immediate
+begin
+    dest = immediate
+end
+
 //
 // instruction: addi
 //
@@ -148,7 +161,7 @@ end
 //
 define rv_lui
     argument variable dest
-    argument constant immedaite
+    argument constant immediate
 begin
     dest = { immediate , 12'b0 }
 end
@@ -162,7 +175,7 @@ end
 define rv_auipc
     argument variable dest
     argument variable pc
-    argument constant immedaite
+    argument constant immediate
 begin
     dest = { immediate , 12'b0 } + pc
 end

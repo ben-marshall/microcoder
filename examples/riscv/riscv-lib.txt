@@ -3,10 +3,29 @@
 using instructions "riscv-instrs.txt"
 
 #
-# RISCV General Purpose Registers.
+# RISCV Data Memory Interface
+#
+
+output reg  rv_mem_valid
+output reg  rv_mem_w_en     
+output reg  rv_mem_addr     [31:0]
+output reg  rv_mem_wdata    [31:0]
+output reg  rv_mem_byte_en  [3:0]
+input       rv_mem_rdata    [31:0]
+input       rv_mem_enable
+input       rv_mem_error
+
+
+#
+# RISCV General Program Counter - Visible State So Needs including.
 #
 
 reg rv_pc  [31:0]
+
+
+#
+# RISCV General Purpose Registers.
+#
 
 const rv_x0  [31:0] = 0
 reg rv_x1  [31:0]

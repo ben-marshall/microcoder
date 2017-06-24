@@ -95,6 +95,7 @@ class UCProgramBlock(object):
         self.resolved       = False
         self.removable      = False
         self.src_statements = copy.deepcopy(statements)
+        self.gets_dereferenced = False
 
     def is_atomic(self):
         """

@@ -85,6 +85,7 @@ class UCResolver(object):
                         block = self.program.blocks_by_name[val[1:]]
                         resolved_args[argument.name] = \
                             self.program.get_block_state_name(block)
+                        block.gets_dereferenced = True
                     else:
                         # Bad reference to a block name.
                         self.log.error(
@@ -273,7 +274,7 @@ class UCResolver(object):
             outset  = self.outgoing_blocks(block)
             
             if(len(inset) + len(outset) == 0):
-                block.removable = True
+                block.removable = True and not candidate.gets_dereferenced
                 continue
             
             # Reads and writes for the parent block.
@@ -296,7 +297,7 @@ class UCResolver(object):
                 if(not cwr.isdisjoint(writes)): continue
                 
                 self.program.blocks[i] = self.coalesce_blocks(block,candidate)
-                candidate.removable = True
+                candidate.removable = True and not candidate.gets_dereferenced
                 changes += 1
                 break
 

@@ -9,6 +9,7 @@
 - [ ] Multiple instantiations of included files.
 - [ ] Make it possible to access state (block) encodings directly for better
       call / return support.
+- [ ] Inlineable blocks rather than callable blocks.
 
 #### Parsing
 

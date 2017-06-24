@@ -86,8 +86,11 @@ by entering an infinite loop.
 
 ## Special Variables and Call / Return
 
-It is possible to implement call-and-return behaviour with blocks by accessing
-the special variable `_current_state_`. The steps for this are as follows:
+There are two ways to implement call/return behaviour in programs. The first
+is via the `_current_state` special variable, the second is via the
+state de-reference operator: `*`.
+
+### The `_current_state_` variable
 
 1. Declare a state variable at least 12-bits wide to be your *return address*
 pointer.
@@ -102,3 +105,39 @@ to the function.
 The caller function **must** jump to the callee if and only if the *called*
 bit is set. If the called bit is not set, this means we have returned to the
 caller state from the callee, and can continue to the next state.
+
+
+### State Dereference Operator
+
+It is possible to access the actual encoding of a block state by prefixing
+its name with a `*`. This is substituded in the final program with the
+encoded value of that state.
+
+In order to use this in an instruction argument, the arugment must be of type
+`constant`.
+
+For example, if we want to call a function `callee` from a function `caller`
+and then return to the `loop` block:
+
+```
+reg return_value [11:0]
+
+block loop
+    blah
+    foo
+    bar
+    goto    caller
+
+block caller
+    set     return_value    *callee
+    goto    callee
+
+block callee
+    blar
+    boo
+    far
+    goto    return_value
+
+```
+
+This method is usually simpler to use than the `_current_state` variable.
